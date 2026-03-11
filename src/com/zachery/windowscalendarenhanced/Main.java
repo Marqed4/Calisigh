@@ -1,4 +1,4 @@
-package com.zachery.windowscalendar;
+package com.zachery.windowscalendarenhanced;
 
 import javafx.application.Application;
 import javafx.scene.paint.Color;

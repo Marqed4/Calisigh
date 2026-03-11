@@ -1,4 +1,4 @@
-package com.zachery.windowscalendar;
+package com.zachery.windowscalendarenhanced;
 
 import javafx.scene.layout.*;
 import javafx.scene.control.Label;
@@ -45,7 +45,9 @@ public class CalendarUI extends StackPane {
             grid.add(cell, col, row);
         }
 
-        this.getChildren().add(grid);
+        VBox container = new VBox();
+        container.getChildren().addAll(createHeader(), grid);
+        this.getChildren().add(container);
     }
 
     private HBox createHeader() {

@@ -1,4 +1,4 @@
-package com.zachery.windowscalendar;
+package com.zachery.windowscalendarenhanced;
 
 import javafx.scene.media.MediaPlayer;
 
@@ -22,9 +22,9 @@ public class AlarmActivation {
     public void displayTray() throws AWTException {
         SystemTray tray = SystemTray.getSystemTray();
 
-        Image image = Toolkit.getDefaultToolkit().createImage(System.getenv("APPDATA") + "\\Windows Calendar\\Assets\\Notification Image.png");
+        Image notification_image = Toolkit.getDefaultToolkit().createImage(System.getenv("APPDATA") + "\\Windows Calendar\\Assets\\Notification Image.png");
 
-        TrayIcon trayIcon = new TrayIcon(image, "Windows Calendar Notification");
+        TrayIcon trayIcon = new TrayIcon(notification_image, "Windows Calendar Notification");
 
         trayIcon.setImageAutoSize(true);
 
