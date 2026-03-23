@@ -1,11 +1,5 @@
 package com.zachery.windowscalendarenhanced;
-
-import javafx.scene.media.MediaPlayer;
-
 import java.awt.TrayIcon.MessageType;
-
-import javafx.scene.media.Media;
-
 import java.io.File;
 import java.awt.*;
 
@@ -34,13 +28,8 @@ public class AlarmActivation {
         trayIcon.displayMessage(this.title, this.desc, MessageType.INFO);
     }
 
-    public void playDefaultNotiSound() {
-        File noti_sound = new File(System.getenv("APPDATA") + "\\Windows Calendar\\Assets\\Windows Notification.mp3");
-        MediaPlayer player1 = new MediaPlayer(new Media(noti_sound.toURI().toString()));
-        player1.play();
-
-        File chime_sound  = new File(System.getenv("APPDATA") + "\\Windows Calendar\\Assets\\Windows 10 Calendar Chime.mp3\"");
-        MediaPlayer player2 = new MediaPlayer(new Media(chime_sound.toURI().toString()));
-        player2.play();
+    public void playDefaultNotiSound() 
+    {
+        
     }
 }
