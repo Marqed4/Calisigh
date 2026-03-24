@@ -1,15 +1,12 @@
-package com.zachery.windowscalendarenhanced;
+package com.zachery.customcalendar;
 
 import java.time.LocalDateTime;
 import java.util.PriorityQueue;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.time.Duration;
 import java.util.Scanner;
-import java.util.Objects;
-import java.util.List;
 import java.awt.*;
 
 /*
@@ -44,7 +41,8 @@ public class DateAlarm
         }
 
         // Remove all of the expired alarms
-        while (!alarmDataQueue.isEmpty()) {
+        while (!alarmDataQueue.isEmpty()) 
+        {
             AlarmRecord next = alarmDataQueue.peek();
             long delay = Duration.between(LocalDateTime.now(), next.time()).getSeconds();
 
@@ -95,7 +93,8 @@ public class DateAlarm
             long delay = Duration.between(LocalDateTime.now(), nextAlarm.time()).getSeconds();
 
             try {
-                if (delay > 0) {
+                if (delay > 0) 
+                {
                     Thread.sleep(delay * 1000);
                 }
 
@@ -110,11 +109,13 @@ public class DateAlarm
                 .displayTray()
                 .playSound();
             } 
-            catch (InterruptedException e) {
+            catch (InterruptedException e) 
+            {
                 Thread.currentThread().interrupt();
                 break;
             } 
-            catch (AWTException e) {
+            catch (AWTException e) 
+            {
                 throw new RuntimeException(e);
             }
         }

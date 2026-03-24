@@ -1,4 +1,4 @@
-package com.zachery.windowscalendarenhanced;
+package com.zachery.customcalendar;
 
 /*
 todo

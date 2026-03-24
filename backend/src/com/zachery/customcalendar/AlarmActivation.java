@@ -1,4 +1,4 @@
-package com.zachery.windowscalendarenhanced;
+package com.zachery.customcalendar;
 import java.awt.TrayIcon.MessageType;
 import java.util.Queue;
 import java.io.File;
