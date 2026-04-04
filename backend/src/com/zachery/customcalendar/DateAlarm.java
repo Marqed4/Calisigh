@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.Duration;
 import java.util.Scanner;
-import java.awt.*;
 
 /*
 todo
@@ -32,9 +31,9 @@ public class DateAlarm
             String[] parts = line.split("\\|&\\^");
 
             AlarmRecord alarm = new AlarmRecord(
-                LocalDateTime.parse(parts[0]),
-                parts[1],
-                parts[2]
+            LocalDateTime.parse(parts[0]),
+            parts[1],
+            parts.length > 2 ? parts[2] : ""
             );
 
             alarmDataQueue.add(alarm);
@@ -57,17 +56,16 @@ public class DateAlarm
 
     public void setAlarm(LocalDateTime time, String title, String desc) throws IOException 
     {
-
         //Add alarm data to current Queue
         alarmDataQueue.add(new AlarmRecord(time, title, desc));
 
-        //Add alarm data to notififications.txt
-        try (FileWriter fw = new FileWriter("notifications/notifications.txt", true);
+        //Add alarm data to notifications.txt
+        try (FileWriter fw = new FileWriter(SystemDirectory.ObtainFile("notifications/notifications.txt"), true);
         PrintWriter pw = new PrintWriter(fw)) 
         {
-        pw.print(time + "|&^");
-        pw.print(title + "|&^");
-        pw.print(desc + "\n");
+            pw.print(time + "|&^");
+            pw.print(title + "|&^");
+            pw.print(desc + "\n");
         }
     }
 
@@ -76,50 +74,48 @@ public class DateAlarm
         //todo
         //remove the alarm info from the notifications.txt
         alarmDataQueue.removeIf(now -> now.time().equals(time));
-;
     }
 
-    //I learned somewhat about threads dealing with memory allocation via malloc! Can it come in handy here?
     //checkAlarm should be called when the application is started. From there it remains a background process.
     public void checkAlarm() throws InterruptedException 
     {
-    Thread thread = new Thread(() -> 
-    {
-        while (!alarmDataQueue.isEmpty()) 
+        Thread thread = new Thread(() -> 
         {
-            AlarmRecord nextAlarm = alarmDataQueue.peek();
-            if (nextAlarm == null) break;
+            while (!alarmDataQueue.isEmpty()) 
+            {
+                AlarmRecord nextAlarm = alarmDataQueue.peek();
+                if (nextAlarm == null) break;
 
-            long delay = Duration.between(LocalDateTime.now(), nextAlarm.time()).getSeconds();
+                long delay = Duration.between(LocalDateTime.now(), nextAlarm.time()).getSeconds();
 
-            try {
-                if (delay > 0) 
+                try {
+                    if (delay > 0) 
+                    {
+                        Thread.sleep(delay * 1000);
+                    }
+
+                    //Fire the CANNONS
+                    AlarmRecord CANNON = alarmDataQueue.poll();
+                    new AlarmActivation
+                    (
+                        CANNON.title(),
+                        CANNON.desc()
+                    )
+                    .displayTray()
+                    .playSound();
+                } 
+                catch (InterruptedException e) 
                 {
-                    Thread.sleep(delay * 1000);
+                    Thread.currentThread().interrupt();
+                    break;
+                } 
+                catch (Exception e) 
+                {
+                    System.err.println("Error firing alarm: " + e.getMessage());
+                    e.printStackTrace();
                 }
-
-                //Fire the CANNONS
-                AlarmRecord CANNON = alarmDataQueue.poll();
-                new AlarmActivation
-                (
-                    CANNON.title(),
-                    CANNON.desc()
-                )
-                
-                .displayTray()
-                .playSound();
-            } 
-            catch (InterruptedException e) 
-            {
-                Thread.currentThread().interrupt();
-                break;
-            } 
-            catch (AWTException e) 
-            {
-                throw new RuntimeException(e);
             }
-        }
-    });
+        });
 
         thread.start();
     }
