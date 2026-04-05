@@ -1,0 +1,22 @@
+/* ── Global / Shared ── */
+
+.background-wrapper {
+  position: fixed;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: -1;
+  filter: brightness(0.55);
+}
+
+.app-container {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  height: 100vh;
+  background: transparent;
+  color: white;
+  font-family: sans-serif;
+  overflow: hidden;
+}
