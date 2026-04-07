@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { emit } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import WinterBackground from "../resources/assets/images/Winter Forest.gif";
+import WinterBackground from "../resources/assets/images/Backgrounds/Winter Forest.gif";
+import FallBackground from "../resources/assets/images/Backgrounds/Fall Forest.gif";
 import "./AddAlarm.css";
 
 export default function AddAlarm() {

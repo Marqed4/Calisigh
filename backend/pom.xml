@@ -23,6 +23,7 @@
   </dependencies>
 
   <build>
+    <finalName>CustomCalendar</finalName>
     <sourceDirectory>src</sourceDirectory>
     <plugins>
       <plugin>

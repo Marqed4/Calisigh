@@ -2,24 +2,22 @@ package com.zachery.customcalendar;
 
 import java.time.LocalDateTime;
 import java.util.PriorityQueue;
-import java.io.FileWriter;
+import java.util.ArrayList;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.Duration;
+import java.io.FileWriter;
 import java.util.Scanner;
-
-/*
-todo
-Implement SQL Lite in app database for alarms instead of records by text file
-Possibly have a List<Map<LocalDateTime, Map<String, String>>> Yea... nightmare fuel.
-*/
+import java.util.List;
 
 public class DateAlarm
 {
     //List of lists includes LocalDateTime(s) & notification information
     PriorityQueue<AlarmRecord> alarmDataQueue = new PriorityQueue<>();
+    List<AlarmRecord> alarmDataList = new ArrayList<>();
 
-    //Creates a DataAlarm Object
+    private Thread alarmThread = null;
+
     //Notification String data format: LocalDateTime|&^Title|&^Description (Key: |&^ = Seperation)
     public DateAlarm() throws IOException 
     {
@@ -30,16 +28,22 @@ public class DateAlarm
             String line = scan.nextLine();
             String[] parts = line.split("\\|&\\^");
 
+            String title = parts[1].replace("<NL>", "\n");
+            String desc  = (parts.length > 2 ? parts[2] : "").replace("<aNL>", "\n");
+
             AlarmRecord alarm = new AlarmRecord(
-            LocalDateTime.parse(parts[0]),
-            parts[1],
-            parts.length > 2 ? parts[2] : ""
+                LocalDateTime.parse(parts[0]),
+                title,
+                desc
             );
 
             alarmDataQueue.add(alarm);
         }
 
-        // Remove all of the expired alarms
+        // Sync display list BEFORE purge so old alarms still show on calendar
+        alarmDataList = new ArrayList<>(alarmDataQueue);
+
+        // Remove expired alarms from the firing queue only
         while (!alarmDataQueue.isEmpty()) 
         {
             AlarmRecord next = alarmDataQueue.peek();
@@ -56,30 +60,44 @@ public class DateAlarm
 
     public void setAlarm(LocalDateTime time, String title, String desc) throws IOException 
     {
-        //Add alarm data to current Queue
-        alarmDataQueue.add(new AlarmRecord(time, title, desc));
+        String safeTitle = title.replace("\n", "<NL>");
+        String safeDesc = desc.replace("\n", "<aNL>");
 
-        //Add alarm data to notifications.txt
+        AlarmRecord alarm = new AlarmRecord(time, title, desc);
+        alarmDataQueue.add(alarm);
+        alarmDataList.add(alarm);
+
+        // Add alarm data to notifications.txt in CustomCalendar appdata's directory
         try (FileWriter fw = new FileWriter(SystemDirectory.ObtainFile("notifications/notifications.txt"), true);
         PrintWriter pw = new PrintWriter(fw)) 
         {
             pw.print(time + "|&^");
-            pw.print(title + "|&^");
-            pw.print(desc + "\n");
+            pw.print(safeTitle + "|&^");
+            pw.print(safeDesc + "\n");
         }
+
+        // Restart the alarm thread to pick up the newly added alarm
+        checkAlarm();
     }
 
-    public void removeAlarm(LocalDateTime time) 
+    public void removeAlarm(LocalDateTime time)
     {
-        //todo
-        //remove the alarm info from the notifications.txt
         alarmDataQueue.removeIf(now -> now.time().equals(time));
+        alarmDataList.removeIf(now -> now.time().equals(time));
+        // todo: remove from notifications.txt
     }
 
-    //checkAlarm should be called when the application is started. From there it remains a background process.
-    public void checkAlarm() throws InterruptedException 
+    // checkAlarm starts or restarts the alarm thread.
+    // If a thread is already sleeping, it is interrupted so it re-evaluates the queue.
+    public void checkAlarm()
     {
-        Thread thread = new Thread(() -> 
+        // Interrupt existing thread so it wakes up and re-checks the queue
+        if (alarmThread != null && alarmThread.isAlive())
+        {
+            alarmThread.interrupt();
+        }
+
+        alarmThread = new Thread(() -> 
         {
             while (!alarmDataQueue.isEmpty()) 
             {
@@ -94,7 +112,7 @@ public class DateAlarm
                         Thread.sleep(delay * 1000);
                     }
 
-                    //Fire the CANNONS
+                    // Fire the CANNONS
                     AlarmRecord CANNON = alarmDataQueue.poll();
                     new AlarmActivation
                     (
@@ -106,8 +124,9 @@ public class DateAlarm
                 } 
                 catch (InterruptedException e) 
                 {
-                    Thread.currentThread().interrupt();
-                    break;
+                    // A new alarm was added — clear the flag and re-check the queue from the top
+                    Thread.interrupted();
+                    continue;
                 } 
                 catch (Exception e) 
                 {
@@ -117,11 +136,12 @@ public class DateAlarm
             }
         });
 
-        thread.start();
+        alarmThread.setDaemon(true);
+        alarmThread.start();
     }
-    
 
-    //Helper Functions
+
+    // Helper Functions
     private Scanner getAllNotificationData() throws IOException 
     {
         java.io.File file = SystemDirectory.ObtainFile("notifications/notifications.txt");
@@ -132,37 +152,10 @@ public class DateAlarm
         }
         return new Scanner(file);
     }
-
-    //Legacy Helpers
-
-    // private PrintWriter getPrintWriter() throws IOException  
-    // {
-    //     return new PrintWriter(SystemDirectory.ObtainFile("notifications/notifications.txt"));
-    // }
-
-    /* <---- ALARM DATA ----> */
-    // private String getAlarmTime(String line)
-    // {
-    //     int div1 = line.indexOf("|&^");
-    //     return line.substring(0, div1);
-    // }
-
-    // private String getTitle(String line)
-    // {
-    //     int div1 = line.indexOf("|&^");
-    //     int div2 = line.indexOf("|&^", div1 + 3);
-    //     return line.substring(div1 + 3, div2);
-    // }
-
-    // private String getDesc(String line)
-    // {
-    //     int div1 = line.indexOf("|&^");
-    //     int div2 = line.indexOf("|&^", div1 + 3);
-    //     return line.substring(div2 + 3);
-    // }
 }
 
 //Notification Examples (Ignore "No. ")
 //1. 2026-20-02T17:05:00|&^Homework|&^Essentials of Software Engineering Chapter 6 Reading
 //2. 2026-24-03T17:05:00|&^Homework|&^Essentials of Software Engineering Chapter 12 Reading
-//2. 2026-26-03T17:05:00|&^Homework|&^CISC 3810/7510: Database Systems: Database Design
+//3. 2026-26-03T17:05:00|&^Homework|&^CISC. 3810/7510: Database Systems: Database Design
+//4. 2026-22-03T17:13:35|&^Dave's Donuts|&^- 2 Vanilla w/ Fresh Strawberry Jam $3<aNL>- 1 Chocolate $3

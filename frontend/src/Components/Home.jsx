@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { listen } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/core";
-import WinterBackground from "../resources/assets/images/Winter Forest.gif";
+import WinterBackground from "../resources/assets/images/Backgrounds/Winter Forest.gif";
+import FallBackground from "../resources/assets/images/Backgrounds/Fall Forest.gif";
 import MonthYearDisplay from "./MonthYearDisplay.jsx";
 import CalendarGrid from "./CalendarGrid.jsx";
 import Sidebar from "./Sidebar.jsx";

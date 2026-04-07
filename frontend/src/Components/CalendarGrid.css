@@ -26,6 +26,14 @@
   display: block;
 }
 
+.day-number-img {
+  height: 25px;
+  margin-left: -25px;
+  margin-bottom: -5px;
+  width: auto;
+  display: block;
+}
+
 .day-cell {
   width: 100%;
   min-height: 0;
@@ -36,13 +44,23 @@
   padding: 4px;
   cursor: pointer;
   position: relative;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .day-cell:hover {
   background: #2a2a2a;
   border-color: #444;
   transition: 0.15s ease;
+}
+
+.day-cell::-webkit-scrollbar {
+  width: 2px;
+}
+
+.day-cell::-webkit-scrollbar-thumb {
+  background: rgba(255, 200, 255);
+  border-radius: 5px;
 }
 
 .day-number {

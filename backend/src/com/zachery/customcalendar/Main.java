@@ -2,7 +2,7 @@ package com.zachery.customcalendar;
 
 import static spark.Spark.*;
 import com.google.gson.Gson;
-import java.io.IOException;
+import com.google.gson.GsonBuilder;
 import java.time.LocalDateTime;
 
 public class Main
@@ -12,10 +12,14 @@ public class Main
         System.out.println("Starting...");
         System.out.flush();
 
-        //Port for the Spark server
+        // Spark Server's Port
         port(4567);
 
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder()
+            .registerTypeAdapter(LocalDateTime.class,
+                (com.google.gson.JsonSerializer<LocalDateTime>) (src, type, ctx) ->
+                    new com.google.gson.JsonPrimitive(src.toString()))
+            .create();
 
         DateAlarm dateAlarm;
         try {
@@ -36,7 +40,7 @@ public class Main
         get("/api/alarms", (req, res) -> {
             res.type("application/json");
             try {
-                return gson.toJson(new java.util.ArrayList<>(dateAlarm.alarmDataQueue));
+                return gson.toJson(dateAlarm.alarmDataList);
             } catch (Exception e) {
                 e.printStackTrace();
                 res.status(500);
@@ -53,7 +57,6 @@ public class Main
                     body.title,
                     body.desc
                 );
-                dateAlarm.checkAlarm();
                 return gson.toJson(new MessageResponse("Alarm set!"));
             } catch (Exception e) {
                 e.printStackTrace();
@@ -63,6 +66,7 @@ public class Main
         });
 
         dateAlarm.checkAlarm();
+
         System.out.println("Java backend running on http://localhost:4567");
         System.out.flush();
     }

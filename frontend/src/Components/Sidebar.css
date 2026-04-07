@@ -64,8 +64,24 @@
   height: 28px;
   background: #1a1a1a;
   border-radius: 4px;
-  text-align: center;
-  line-height: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.mini-day-gif-wrapper {
+  width: 20px;
+  height: 20px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.mini-number-gif {
+  height: 100%;
+  width: auto;
+  display: block;
 }
 
 .faq-link {
