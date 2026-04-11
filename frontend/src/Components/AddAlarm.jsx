@@ -46,7 +46,7 @@ export default function AddAlarm() {
     <>
       <div
         className="alarm-background"
-        style={{ backgroundImage: `url(${WinterBackground})` }}
+        style={{ backgroundImage: `url(${FallBackground})` }}
       />
       <div className="alarm-window">
         <h2>Add Alarm</h2>

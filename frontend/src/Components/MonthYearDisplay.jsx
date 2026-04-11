@@ -22,8 +22,8 @@ import n7 from "../resources/assets/images/Numbers/7.gif";
 import n8 from "../resources/assets/images/Numbers/8.gif";
 import n9 from "../resources/assets/images/Numbers/9.gif";
 
-import leftarrow from "../resources/assets/images/ShapesSigns/Left Arrow.gif";
-import rightarrow from "../resources/assets/images/ShapesSigns/Right Arrow.gif";
+import leftarrow from "../resources/assets/images/ShapesSigns/Reflective Left Arrow.gif";
+import rightarrow from "../resources/assets/images/ShapesSigns/Reflective Right Arrow.gif";
 
 const MONTHS = [jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec];
 const NUMBERS = [n0, n1, n2, n3, n4, n5, n6, n7, n8, n9];
@@ -32,6 +32,7 @@ export default function MonthYearDisplay({ currentDate, onPrev, onNext }) {
   return (
     <div className="top-nav">
       <img src={leftarrow} alt="Previous" className="nav-arrow" onClick={onPrev} />
+
       <div className="main-month">
         <img
           src={MONTHS[currentDate.getMonth()]}
@@ -40,10 +41,16 @@ export default function MonthYearDisplay({ currentDate, onPrev, onNext }) {
         />
         <div className="year-gifs">
           {String(currentDate.getFullYear()).split("").map((digit, i) => (
-            <img key={i} src={NUMBERS[parseInt(digit)]} alt={digit} className="number-gif" />
+            <img
+              key={i}
+              src={NUMBERS[parseInt(digit)]}
+              alt={digit}
+              className="number-gif"
+            />
           ))}
         </div>
       </div>
+
       <img src={rightarrow} alt="Next" className="nav-arrow" onClick={onNext} />
     </div>
   );

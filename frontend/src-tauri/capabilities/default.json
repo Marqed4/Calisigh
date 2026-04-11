@@ -8,7 +8,9 @@
       "identifier": "opener:allow-open-url",
       "allow": [
         { "url": "https://www.marqed.it/*" },
-        { "url": "https://marqed.it/*" }
+        { "url": "https://www.github.com.Marqed4/*" },
+        { "url": "https://www.marqed4.github.io/*" },
+        { "url": "https://www.marqed.it/CustomCalendar*" }
       ]
     },
     "core:default",

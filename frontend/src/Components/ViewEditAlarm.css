@@ -1,0 +1,8 @@
+.alarm-buttons .delete-btn {
+  background: rgba(255, 80, 80, 0.18);
+  color: #ff8080;
+}
+
+.alarm-buttons .delete-btn:hover {
+  background: rgba(255, 80, 80, 0.32);
+}

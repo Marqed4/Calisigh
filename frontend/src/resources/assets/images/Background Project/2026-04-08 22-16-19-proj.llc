@@ -1,0 +1,11 @@
+{
+  version: 1,
+  mediaFileName: '2026-04-08 22-16-19.mp4',
+  cutSegments: [
+    {
+      start: 7.949218750000001,
+      end: 38.601406250000004,
+      name: '',
+    },
+  ],
+}

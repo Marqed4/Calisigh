@@ -1,52 +1,45 @@
-.main-month {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0px;
-  overflow: visible;
-  width: auto;
-}
-
-.month-gif {
-  height: 35px;
-  width: auto;
-  display: block;
-  margin: 0 auto;
-}
-
-.month-text {
-  font-size: 1.5rem;
-  color: white;
-}
-
-.year-gifs {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: visible;
-}
-
-.number-gif {
-  height: 35px;
-  width: auto;
-  margin-left: -75px;
-  margin-top: -20px;
-  user-select: none;
-  position: relative;
-  z-index: 1;
-}
-
-.number-gif:first-child {
-  margin-left: 0;
-}
-
 .top-nav {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 20px;
-  overflow: visible;
   width: 100%;
+}
+
+.main-month {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.month-year-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.month-gif {
+  height: 55px;
+  width: auto;
+  display: block;
+}
+
+.year-gifs {
+  display: flex;
+  align-items: center;
+  margin-top: -25px;
+}
+
+.number-gif {
+  height: 45px;
+  width: auto;
+  user-select: none;
+  margin-left: -105px;
+}
+
+.number-gif:first-child {
+  margin-left: 0;
 }
 
 .nav-arrow {

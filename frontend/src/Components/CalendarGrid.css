@@ -21,14 +21,14 @@
 }
 
 .day-gif {
-  height: 80px;
+  height: 55px;
   width: 100%;
   object-fit: contain;
   display: block;
 }
 
 .day-number-img {
-  height: 25px;
+  height: 30px;
   margin-left: -25px;
   margin-bottom: -5px;
   width: auto;
@@ -39,8 +39,8 @@
   width: 100%;
   min-height: 0;
   border: 1px solid transparent;
-  background: rgba(25, 30, 20, 0.20);
-  backdrop-filter: blur(3px);
+  background: rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(2.5px);
   pointer-events: auto;
   padding: 4px;
   cursor: pointer;
@@ -48,6 +48,7 @@
   overflow-y: auto;
   overflow-x: hidden;
 }
+
 
 .day-cell:hover {
   background: #2a2a2a;
@@ -79,10 +80,7 @@
 }
 
 .today {
-  border: 1px solid rgb(0, 0, 0);
-  background: rgb(0, 0, 0);
-  box-shadow: 0 0 8px rgb(0, 0, 0);
-  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.70);
 }
 
 .alarm {
@@ -118,5 +116,5 @@
 }
 
 .alarm-delete:hover {
-  opacity: 1;
+  opacity: .50;
 }

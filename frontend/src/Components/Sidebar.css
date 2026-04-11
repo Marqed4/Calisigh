@@ -5,22 +5,17 @@
   max-width: 260px;
   flex-shrink: 0;
   padding: 20px;
+  padding-left: 28px;
   border-right: 1px solid #222;
   background: rgba(0, 0, 0, 0.65);
-  overflow: hidden;
+  overflow: visible;
 }
 
 .sidebar-month {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  margin-bottom: 20px;
+  align-items: center;  /* add this */
   margin-left: 10px;
-}
-
-.sidebar-month-gif {
-  height: 60px;
-  width: auto;
 }
 
 .sidebar-month-text {
@@ -31,13 +26,16 @@
 .sidebar-year-gifs {
   display: flex;
   align-items: center;
+  justify-content: center;  /* add this */
   margin-top: -25px;
+  width: 100%;              /* add this */
 }
-
 .sidebar-number-gif {
-  height: 45px;
+  height: 60px;
   width: auto;
-  margin-left: -105px;
+  margin-left: -135px;
+  margin-top: -40px;
+  margin-bottom: 20px;
 }
 
 .sidebar-number-gif:first-child {
@@ -57,7 +55,17 @@
 
 .mini-day-label {
   text-align: center;
-  opacity: 0.6;
+  height: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.mini-day-label-gif {
+  height: 25px;
+  margin-bottom: 10px;
+  width: auto;
+  display: block;
 }
 
 .mini-day {
@@ -67,6 +75,12 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.mini-today {
+  border: 1px solid rgb(255, 255, 255);
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
 }
 
 .mini-day-gif-wrapper {
@@ -79,7 +93,7 @@
 }
 
 .mini-number-gif {
-  height: 100%;
+  height: 35px;
   width: auto;
   display: block;
 }
@@ -94,5 +108,5 @@
 
 .details-header {
   height: 45px;
-  width: auto;
+  transform: translateX(30px);
 }
