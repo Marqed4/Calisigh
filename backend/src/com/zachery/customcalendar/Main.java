@@ -78,7 +78,10 @@ public class Main
             }
         });
 
+        //Check za alarms ya
         dateAlarm.checkAlarm();
+        //Initiate za AI api ya
+        new Chat().register();
 
         System.out.println("Java backend running on http://localhost:4567");
         System.out.flush();

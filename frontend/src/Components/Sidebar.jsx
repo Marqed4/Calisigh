@@ -1,4 +1,6 @@
 import { openUrl } from '@tauri-apps/plugin-opener';
+import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
+
 import "./Sidebar.css";
 
 import jan from "../resources/assets/images/Months/January.gif?url";
@@ -54,6 +56,7 @@ import wLetter from "../resources/assets/images/Letters/W.gif?url";
 import fLetter from "../resources/assets/images/Letters/F.gif?url";
 
 import FAQ from "../resources/assets/images/ShapesSigns/FAQ.gif?url";
+import ChatGif from "../resources/assets/images/ShapesSigns/Chat.gif?url";
 
 const MONTHS = [jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec];
 
@@ -70,6 +73,26 @@ const DAY_GIFS = [
 ];
 
 const DAY_LABELS = [sLetter, mLetter, tLetter, wLetter, tLetter, fLetter, sLetter];
+
+async function openChatWindow() {
+  try {
+    const existing = await WebviewWindow.getByLabel("view-chat-assistant");
+    if (existing) {
+      await existing.setFocus();
+      return;
+    }
+    new WebviewWindow("view-chat-assistant", {
+      url: "/view-chat-assistant",
+      title: "Calendar Assistant",
+      width: 340,
+      height: 520,
+      resizable: false,
+      alwaysOnTop: true,
+    });
+  } catch (err) {
+    console.error("openChatWindow failed:", err);
+  }
+}
 
 export default function Sidebar({ currentDate, calendarDays }) {
   const monthGif = MONTHS[currentDate.getMonth()];
@@ -117,6 +140,7 @@ export default function Sidebar({ currentDate, calendarDays }) {
             </div>
           );
         })}
+
       </div>
 
       <a
@@ -128,7 +152,19 @@ export default function Sidebar({ currentDate, calendarDays }) {
         }}
         style={{ cursor: "pointer" }}
       >
-        <img src={FAQ} className="details-header" alt="FAQ" />
+        <img src={FAQ} className="faq-header" alt="FAQ" />
+      </a>
+
+      <a
+        className="faq-link"
+        title="Calisgh Bud"
+        onClick={(e) => {
+          e.preventDefault();
+          openChatWindow();
+        }}
+        style={{ cursor: "pointer" }}
+      >
+        <img src={ChatGif} className="chatbot-header" alt="Chat" />
       </a>
     </div>
   );

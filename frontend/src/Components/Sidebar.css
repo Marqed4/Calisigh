@@ -106,7 +106,13 @@
   align-items: center;
 }
 
-.details-header {
+.faq-header {
   height: 45px;
   transform: translateX(30px);
+}
+
+.chatbot-header {
+  height: 65px;
+  width: auto;
+  transform: translateX(215px);
 }
