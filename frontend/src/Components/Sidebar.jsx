@@ -56,7 +56,7 @@ import wLetter from "../resources/assets/images/Letters/W.gif?url";
 import fLetter from "../resources/assets/images/Letters/F.gif?url";
 
 import FAQ from "../resources/assets/images/ShapesSigns/FAQ.gif?url";
-import ChatGif from "../resources/assets/images/ShapesSigns/Chat.gif?url";
+import Chat from "../resources/assets/images/ShapesSigns/Chat.gif?url";
 
 const MONTHS = [jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec];
 
@@ -83,9 +83,9 @@ async function openChatWindow() {
     }
     new WebviewWindow("view-chat-assistant", {
       url: "/view-chat-assistant",
-      title: "Calendar Assistant",
-      width: 340,
-      height: 520,
+      title: "Calisigh Helper",
+      width: 420,
+      height: 420,
       resizable: false,
       alwaysOnTop: true,
     });
@@ -156,15 +156,15 @@ export default function Sidebar({ currentDate, calendarDays }) {
       </a>
 
       <a
-        className="faq-link"
-        title="Calisgh Bud"
+        className="chat-link"
+        title="Calisgh Bud/Chat Assistant"
         onClick={(e) => {
           e.preventDefault();
           openChatWindow();
         }}
         style={{ cursor: "pointer" }}
       >
-        <img src={ChatGif} className="chatbot-header" alt="Chat" />
+        <img src={Chat} className="chatbot-header" alt="Chat" />
       </a>
     </div>
   );

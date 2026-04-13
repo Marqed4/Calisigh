@@ -2,19 +2,47 @@ import { useState, useEffect, useRef } from "react";
 import { listen } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/core";
 import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
+import SettingsGif from "../resources/assets/images/ShapesSigns/Settings.gif?url";
 import WinterBackground from "../resources/assets/images/Backgrounds/Winter Forest.gif";
 import FallBackground from "../resources/assets/images/Backgrounds/Fall Forest.gif";
+import SpringBackground from "../resources/assets/images/Backgrounds/Spring Forest.gif";
+import SummerBackground from "../resources/assets/images/Backgrounds/Summer Forest.gif";
 import MonthYearDisplay from "./MonthYearDisplay.jsx";
 import CalendarGrid from "./CalendarGrid.jsx";
 import Sidebar from "./Sidebar.jsx";
 import "./MonthYearDisplay.css";
 import "./Home.css";
 
+const BG_MAP = {
+  fall: FallBackground,
+  winter: WinterBackground,
+  spring: SpringBackground,
+  summer: SummerBackground,
+};
+
 export default function Home() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [alarms, setAlarms] = useState([]);
   const [gridSize, setGridSize] = useState(0);
+  const [bg, setBg] = useState(BG_MAP[localStorage.getItem("calisigh-bg") ?? "fall"]);
   const mainRef = useRef(null);
+
+  useEffect(() => {
+    const onFocus = () => setBg(BG_MAP[localStorage.getItem("calisigh-bg") ?? "fall"]);
+    window.addEventListener("focus", onFocus);
+    return () => window.removeEventListener("focus", onFocus);
+  }, []);
+
+  useEffect(() => {
+    loadAlarms();
+    const unlisten = listen("alarm-saved", () => loadAlarms());
+    updateSize();
+    window.addEventListener("resize", updateSize);
+    return () => {
+      unlisten.then(f => f());
+      window.removeEventListener("resize", updateSize);
+    };
+  }, []);
 
   function updateSize() {
     if (mainRef.current) {
@@ -48,52 +76,50 @@ export default function Home() {
   }
 
   async function openEditWindow(alarm) {
-    const dt    = new Date(alarm.time);
-    const day   = dt.getDate();
+    const dt = new Date(alarm.time);
+    const day = dt.getDate();
     const month = dt.getMonth() + 1;
-    const year  = dt.getFullYear();
-    const time  = alarm.time.slice(11, 16);
-
+    const year = dt.getFullYear();
+    const time = alarm.time.slice(11, 16);
     const query = new URLSearchParams({
-      id:    alarm.id,
+      id: alarm.time,
       title: alarm.title,
-      desc:  alarm.desc ?? "",
+      desc: alarm.desc ?? "",
       day, month, year, time,
     }).toString();
-
     try {
       const existing = await WebviewWindow.getByLabel("view-edit-alarm");
-      if (existing) {
-        await existing.close();
-      }
-
+      if (existing) await existing.close();
       const win = new WebviewWindow("view-edit-alarm", {
-        url:         `/view-edit-alarm?${query}`,
-        title:       "Edit Alarm",
-        width:       320,
-        height:      310,
-        resizable:   false,
+        url: `/view-edit-alarm?${query}`,
+        title: "Edit Alarm",
+        width: 320,
+        height: 310,
+        resizable: false,
         alwaysOnTop: true,
       });
-
-      win.once("tauri://error", (e) => {
-        console.error("WebviewWindow error:", e);
-      });
+      win.once("tauri://error", (e) => console.error("WebviewWindow error:", e));
     } catch (err) {
       console.error("openEditWindow failed:", err);
     }
   }
 
-  useEffect(() => {
-    loadAlarms();
-    const unlisten = listen("alarm-saved", () => loadAlarms());
-    updateSize();
-    window.addEventListener("resize", updateSize);
-    return () => {
-      unlisten.then(f => f());
-      window.removeEventListener("resize", updateSize);
-    };
-  }, []);
+  const openSettingsWindow = async () => {
+    try {
+      const existing = await WebviewWindow.getByLabel("view-settings");
+      if (existing) { await existing.setFocus(); return; }
+      new WebviewWindow("view-settings", {
+        url: "/view-settings",
+        title: "Settings",
+        width: 320,
+        height: 340,
+        resizable: false,
+        alwaysOnTop: true,
+      });
+    } catch (err) {
+      console.error("openSettingsWindow failed:", err);
+    }
+  };
 
   function changeMonth(offset) {
     const newDate = new Date(currentDate);
@@ -116,9 +142,9 @@ export default function Home() {
     if (!date) return;
     try {
       await invoke("open_alarm_window", {
-        day:   date.getDate(),
+        day: date.getDate(),
         month: currentDate.getMonth() + 1,
-        year:  currentDate.getFullYear(),
+        year: currentDate.getFullYear(),
       });
     } catch (err) {
       console.error("Failed to open alarm window:", err);
@@ -128,10 +154,7 @@ export default function Home() {
   const calendarDays = getCalendarDays(currentDate);
 
   return (
-    <div
-      className="background-wrapper"
-      style={{ backgroundImage: `url(${FallBackground})` }}
-    >
+    <div className="background-wrapper" style={{ backgroundImage: `url(${bg})` }}>
       <div className="app-container">
         <Sidebar currentDate={currentDate} calendarDays={calendarDays} />
         <main className="main" ref={mainRef}>
@@ -150,6 +173,14 @@ export default function Home() {
             gridSize={gridSize}
           />
         </main>
+        <a
+          className="settings-link"
+          title="Calisigh's Settings"
+          onClick={(e) => { e.preventDefault(); openSettingsWindow(); }}
+          style={{ cursor: "pointer" }}
+        >
+          <img src={SettingsGif} className="settings-header" alt="Settings" />
+        </a>
       </div>
     </div>
   );

@@ -1,15 +1,13 @@
 com\zachery\customcalendar\Main$AlarmRequest.class
 com\zachery\customcalendar\SystemDirectory.class
-com\zachery\customcalendar\Chat$GeminiResponse.class
 com\zachery\customcalendar\Main.class
-com\zachery\customcalendar\Chat$GeminiResponse$Candidate$Content$Part.class
 com\zachery\customcalendar\Chat$ChatMessage.class
 com\zachery\customcalendar\AlarmRecord.class
+com\zachery\customcalendar\Chat$OllamaResponse$Message.class
 com\zachery\customcalendar\Main$MessageResponse.class
 com\zachery\customcalendar\AlarmActivation.class
-com\zachery\customcalendar\Chat$GeminiResponse$Candidate$Content.class
-com\zachery\customcalendar\Chat$GeminiResponse$Candidate.class
 com\zachery\customcalendar\DateAlarm.class
 com\zachery\customcalendar\Chat.class
 com\zachery\customcalendar\Chat$ChatRequest.class
 com\zachery\customcalendar\Chat$ChatReply.class
+com\zachery\customcalendar\Chat$OllamaResponse.class

@@ -1,10 +1,26 @@
+@import url(
+    'https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Special+Elite&display=swap');
+
+.patrick-hand-regular {
+  font-family: "Patrick Hand", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.special-elite-regular {
+  font-family: "Special Elite", system-ui;
+  font-weight: 250;
+  font-style: normal;
+}
+
+
 .chat-wrapper {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background: rgba(10, 10, 10, 0.95);
+  background: rgba(10, 10, 10, 0.25);
   color: #fff;
-  font-family: sans-serif;
+  font-family: "Partick Hand";
   overflow: hidden;
 }
 
@@ -42,7 +58,7 @@
 }
 
 .chat-messages::-webkit-scrollbar {
-  width: 2px;
+  width: 5px;
 }
 
 .chat-messages::-webkit-scrollbar-thumb {
@@ -61,13 +77,13 @@
 
 .chat-bubble.user {
   align-self: flex-end;
-  background: rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.10);
   color: #fff;
 }
 
 .chat-bubble.assistant {
   align-self: flex-start;
-  background: rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.05);
   color: rgba(255,255,255,0.85);
 }
 
@@ -99,29 +115,30 @@
   align-items: flex-end;
   gap: 6px;
   padding: 8px 10px;
-  border-top: 1px solid rgba(255,255,255,0.1);
+  border-top: 1px solid rgba(255,255,255,0.25);
 }
 
 .chat-input {
   flex: 1;
   background: rgba(255,255,255,0.07);
-  border: 1px solid rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
   border-radius: 8px;
   color: #fff;
   font-size: 0.78rem;
   padding: 6px 8px;
   resize: none;
   outline: none;
-  font-family: sans-serif;
+  letter-spacing: 0.05em;
+  font-family: "Patrick Hand";
 }
 
 .chat-input:focus {
-  border-color: rgba(255,255,255,0.3);
+  border-color: rgba(255,255,255,0.25);
 }
 
 .chat-send {
   background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.25);
   color: #fff;
   border-radius: 8px;
   padding: 6px 10px;
@@ -130,10 +147,22 @@
 }
 
 .chat-send:hover {
-  background: rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.25);
 }
 
 .chat-send:disabled {
   opacity: 0.4;
   cursor: default;
+}
+
+.chat-end {
+  height: 15px;
+  width: auto;
+  cursor: pointer;
+  align-self: flex-end;
+  opacity: 0.8;
+}
+
+.chat-end:hover {
+  opacity: .50;
 }

@@ -31,11 +31,14 @@ public class Main
 
         before((req, res) -> {
             res.header("Access-Control-Allow-Origin", "*");
-            res.header("Access-Control-Allow-Methods", "GET, POST, DELETE");
+            res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
             res.header("Access-Control-Allow-Headers", "Content-Type");
         });
 
-        options("/*", (req, res) -> "OK");
+        options("/*", (req, res) -> {
+            res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+            return "OK";
+        });
 
         get("/api/alarms", (req, res) -> {
             res.type("application/json");
@@ -78,9 +81,26 @@ public class Main
             }
         });
 
-        //Check za alarms ya
+        put("/api/alarms/:id", (req, res) -> {
+            res.type("application/json");
+            try {
+                String id = req.params(":id");
+                AlarmRequest body = gson.fromJson(req.body(), AlarmRequest.class);
+                dateAlarm.updateAlarm(
+                    id,
+                    LocalDateTime.parse(body.time),
+                    body.title,
+                    body.desc
+                );
+                return gson.toJson(new MessageResponse("Alarm updated..."));
+            } catch (Exception e) {
+                e.printStackTrace();
+                res.status(500);
+                return gson.toJson(new MessageResponse("Failed: " + e.getMessage()));
+            }
+        });
+
         dateAlarm.checkAlarm();
-        //Initiate za AI api ya
         new Chat().register();
 
         System.out.println("Java backend running on http://localhost:4567");

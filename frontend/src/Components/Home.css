@@ -33,3 +33,17 @@
   border-radius: 6px;
   cursor: pointer;
 }
+
+.settings-link {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  display: flex;
+  align-items: center;
+  z-index: 10;
+}
+
+.settings-header {
+  height: 45px;
+  width: auto;
+}

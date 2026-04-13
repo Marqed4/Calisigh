@@ -111,8 +111,16 @@
   transform: translateX(30px);
 }
 
+.chat-link {
+  position: absolute;
+  bottom: -0.01rem;
+  right: -12rem;
+  display: flex;
+  align-items: center;
+}
+
 .chatbot-header {
   height: 65px;
   width: auto;
-  transform: translateX(215px);
+  transform: translateX(-200px);
 }

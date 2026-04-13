@@ -98,6 +98,35 @@ public class DateAlarm
         }
     }
 
+    public void updateAlarm(String id, LocalDateTime newTime, String newTitle, String newDesc) throws IOException
+    {
+        LocalDateTime oldTime = LocalDateTime.parse(id);
+
+        alarmDataQueue.removeIf(a -> a.time().equals(oldTime));
+        alarmDataList.removeIf(a -> a.time().equals(oldTime));
+
+        java.io.File file = SystemDirectory.ObtainFile("notifications/notifications.txt");
+        List<String> lines = new ArrayList<>();
+
+        try (Scanner scan = new Scanner(file)) {
+            while (scan.hasNextLine()) {
+                String line = scan.nextLine();
+                String[] parts = line.split("\\|&\\^");
+                if (!LocalDateTime.parse(parts[0]).equals(oldTime)) {
+                    lines.add(line);
+                }
+            }
+        }
+
+        try (PrintWriter pw = new PrintWriter(file)) {
+            for (String line : lines) {
+                pw.println(line);
+            }
+        }
+
+        setAlarm(newTime, newTitle, newDesc);
+    }
+
     public void checkAlarm()
     {
         if (alarmThread != null && alarmThread.isAlive())
