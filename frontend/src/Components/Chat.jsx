@@ -73,7 +73,7 @@ export default function Chat() {
     } catch (err) {
       setMessages(prev => [...prev, { role: "assistant", content: "Great, something broke. not surprised honestly. Try again." }]);
     }
-    setLoading(false);
+    setLoading(false); 
   };
 
   const handleKeyDown = (e) => {
