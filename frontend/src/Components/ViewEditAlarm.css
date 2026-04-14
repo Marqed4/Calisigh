@@ -6,3 +6,19 @@
 .alarm-buttons .delete-btn:hover {
   background: rgba(255, 80, 80, 0.32);
 }
+
+.alarm-background {
+  position: fixed;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.alarm-background::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+}

@@ -72,7 +72,7 @@ import n29i from "../resources/assets/images/Numbers/29 Inverted.gif";
 import n30i from "../resources/assets/images/Numbers/30 Inverted.gif";
 import n31i from "../resources/assets/images/Numbers/31 Inverted.gif";
 
-import Remove from "../resources/assets/images/ShapesSigns/Reflective Remove.gif";
+import Remove from "../resources/assets/images/ShapesSigns/Red Remove.gif";
 
 import "./CalendarGrid.css";
 

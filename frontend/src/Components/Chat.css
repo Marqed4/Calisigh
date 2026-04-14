@@ -120,7 +120,7 @@
 
 .chat-input {
   flex: 1;
-  background: rgba(255,255,255,0.07);
+  background: rgba(255,255,255,0.05);
   border: 1px solid rgba(255,255,255,0.25);
   border-radius: 8px;
   color: #fff;
@@ -133,7 +133,7 @@
 }
 
 .chat-input:focus {
-  border-color: rgba(255,255,255,0.25);
+  border-color: rgba(255,255,255,0.55);
 }
 
 .chat-send {
@@ -144,6 +144,7 @@
   padding: 6px 10px;
   cursor: pointer;
   font-size: 0.85rem;
+  transform: translateY(-8.5px);
 }
 
 .chat-send:hover {
@@ -151,7 +152,7 @@
 }
 
 .chat-send:disabled {
-  opacity: 0.4;
+  opacity: 0.5;
   cursor: default;
 }
 
@@ -165,4 +166,13 @@
 
 .chat-end:hover {
   opacity: .50;
+}
+
+.chat-background {
+  position: fixed;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  pointer-events: none;
+  z-index: 0;
 }

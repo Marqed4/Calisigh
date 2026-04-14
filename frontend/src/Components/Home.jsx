@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import { listen } from "@tauri-apps/api/event";
-import { invoke } from "@tauri-apps/api/core";
 import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
 import SettingsGif from "../resources/assets/images/ShapesSigns/Settings.gif?url";
 import WinterBackground from "../resources/assets/images/Backgrounds/Winter Forest.gif";
@@ -20,18 +19,42 @@ const BG_MAP = {
   summer: SummerBackground,
 };
 
+async function openWindow(label, url, options = {}) {
+  console.log("openWindow called", label);
+  try {
+    const existing = await WebviewWindow.getByLabel(label);
+    if (existing) {
+      await existing.show();
+      await existing.setFocus();
+      return;
+    }
+    const win = new WebviewWindow(label, {
+      url,
+      resizable: false,
+      center: true,
+      parent: "main",
+      ...options,
+    });
+    win.once("tauri://error", (e) => console.error(`${label} error:`, e));
+    win.once("tauri://created", () => console.log(`${label} created`));
+  } catch (err) {
+    console.error(`Failed to open ${label}:`, err);
+  }
+}
+
 export default function Home() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [alarms, setAlarms] = useState([]);
   const [gridSize, setGridSize] = useState(0);
-  const [bg, setBg] = useState(BG_MAP[localStorage.getItem("calisigh-bg") ?? "fall"]);
   const mainRef = useRef(null);
 
-  useEffect(() => {
-    const onFocus = () => setBg(BG_MAP[localStorage.getItem("calisigh-bg") ?? "fall"]);
-    window.addEventListener("focus", onFocus);
-    return () => window.removeEventListener("focus", onFocus);
-  }, []);
+const [bg, setBg] = useState(BG_MAP[localStorage.getItem("calisigh-bg") ?? "fall"]);
+
+useEffect(() => {
+  const onFocus = () => setBg(BG_MAP[localStorage.getItem("calisigh-bg") ?? "fall"]);
+  window.addEventListener("focus", onFocus);
+  return () => window.removeEventListener("focus", onFocus);
+}, []);
 
   useEffect(() => {
     loadAlarms();
@@ -75,51 +98,26 @@ export default function Home() {
     }
   }
 
+  async function openAlarmWindow(date) {
+    if (!date) return;
+    await openWindow("add-alarm", `/add-alarm?day=${date.getDate()}&month=${currentDate.getMonth() + 1}&year=${currentDate.getFullYear()}`);
+  }
+
   async function openEditWindow(alarm) {
     const dt = new Date(alarm.time);
-    const day = dt.getDate();
-    const month = dt.getMonth() + 1;
-    const year = dt.getFullYear();
-    const time = alarm.time.slice(11, 16);
     const query = new URLSearchParams({
       id: alarm.time,
       title: alarm.title,
       desc: alarm.desc ?? "",
-      day, month, year, time,
+      day: dt.getDate(),
+      month: dt.getMonth() + 1,
+      year: dt.getFullYear(),
+      time: alarm.time.slice(11, 16),
     }).toString();
-    try {
-      const existing = await WebviewWindow.getByLabel("view-edit-alarm");
-      if (existing) await existing.close();
-      const win = new WebviewWindow("view-edit-alarm", {
-        url: `/view-edit-alarm?${query}`,
-        title: "Edit Alarm",
-        width: 320,
-        height: 310,
-        resizable: false,
-        alwaysOnTop: true,
-      });
-      win.once("tauri://error", (e) => console.error("WebviewWindow error:", e));
-    } catch (err) {
-      console.error("openEditWindow failed:", err);
-    }
+    await openWindow("view-edit-alarm", `/view-edit-alarm?${query}`);
   }
 
-  const openSettingsWindow = async () => {
-    try {
-      const existing = await WebviewWindow.getByLabel("view-settings");
-      if (existing) { await existing.setFocus(); return; }
-      new WebviewWindow("view-settings", {
-        url: "/view-settings",
-        title: "Settings",
-        width: 320,
-        height: 340,
-        resizable: false,
-        alwaysOnTop: true,
-      });
-    } catch (err) {
-      console.error("openSettingsWindow failed:", err);
-    }
-  };
+  const openSettingsWindow = () => openWindow("view-settings", "/view-settings", { title : "Settings"});
 
   function changeMonth(offset) {
     const newDate = new Date(currentDate);
@@ -136,19 +134,6 @@ export default function Home() {
     for (let i = 0; i < startDay; i++) days.push(null);
     for (let d = 1; d <= daysInMonth; d++) days.push(new Date(year, month, d));
     return days;
-  }
-
-  async function openAlarmWindow(date) {
-    if (!date) return;
-    try {
-      await invoke("open_alarm_window", {
-        day: date.getDate(),
-        month: currentDate.getMonth() + 1,
-        year: currentDate.getFullYear(),
-      });
-    } catch (err) {
-      console.error("Failed to open alarm window:", err);
-    }
   }
 
   const calendarDays = getCalendarDays(currentDate);

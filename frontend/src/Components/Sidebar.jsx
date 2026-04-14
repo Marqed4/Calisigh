@@ -60,9 +60,7 @@ import Chat from "../resources/assets/images/ShapesSigns/Chat.gif?url";
 
 const MONTHS = [jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec];
 
-const YEAR_DIGITS = [
-  n0i, n1i, n2i, n3i, n4i, n5i, n6i, n7i, n8i, n9i
-];
+const YEAR_DIGITS = [n0i, n1i, n2i, n3i, n4i, n5i, n6i, n7i, n8i, n9i];
 
 const DAY_GIFS = [
   null,
@@ -78,17 +76,20 @@ async function openChatWindow() {
   try {
     const existing = await WebviewWindow.getByLabel("view-chat-assistant");
     if (existing) {
+      await existing.center();
+      await existing.show();
       await existing.setFocus();
-      return;
+    } else {
+      const win = new WebviewWindow("view-chat-assistant", {
+        url: "/view-chat-assistant",
+        title: "Chat",
+        width: 420,
+        height: 420,
+        resizable: true,
+        center: true,
+      });
+      win.once("tauri://error", (e) => console.error("chat error:", e));
     }
-    new WebviewWindow("view-chat-assistant", {
-      url: "/view-chat-assistant",
-      title: "Calisigh Helper",
-      width: 420,
-      height: 420,
-      resizable: false,
-      alwaysOnTop: true,
-    });
   } catch (err) {
     console.error("openChatWindow failed:", err);
   }
@@ -140,7 +141,6 @@ export default function Sidebar({ currentDate, calendarDays }) {
             </div>
           );
         })}
-
       </div>
 
       <a

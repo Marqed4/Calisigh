@@ -1,3 +1,5 @@
+/* figure out windows controller z index against other windows/panes */
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -95,7 +97,6 @@ body {
   padding: 8px 10px;
   outline: none;
   transition: border-color 0.15s, background 0.15s;
-  /* ensure pointer events are active */
   pointer-events: auto;
   position: relative;
   z-index: 2;
@@ -121,7 +122,6 @@ body {
   height: 72px;
 }
 
-/* ── Buttons ── */
 .alarm-buttons {
   display: flex;
   gap: 8px;

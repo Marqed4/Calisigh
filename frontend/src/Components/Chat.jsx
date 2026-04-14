@@ -5,8 +5,6 @@ import FallBackground from "../resources/assets/images/Backgrounds/Fall Forest.g
 import SpringBackground from "../resources/assets/images/Backgrounds/Spring Forest.gif";
 import SummerBackground from "../resources/assets/images/Backgrounds/Summer Forest.gif";
 
-import End from "../resources/assets/images/ShapesSigns/Reflective Remove.gif";
-
 import "./Chat.css";
 
 const appWindow = getCurrentWebviewWindow();
@@ -89,13 +87,6 @@ export default function Chat() {
       <div className="chat-wrapper">
         <div className="chat-header">
           <span>Calisigh Helper</span>
-          <button className="chat-close" onClick={() => appWindow.close()}>
-            <img
-              src={End}
-              alt="End"
-              className="chat-end"
-            />
-          </button>
         </div>
         <div className="chat-messages">
           {messages.map((msg, i) => (
@@ -116,7 +107,7 @@ export default function Chat() {
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Ask about your events..."
+            placeholder="Pour your heart out... or whatever."
             rows={2}
           />
           <button className="chat-send" onClick={sendMessage} disabled={loading}>

@@ -42,8 +42,7 @@ fn main() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
-            commands::call_java,
-            commands::open_alarm_window
+            commands::call_java
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
