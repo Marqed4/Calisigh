@@ -1,7 +1,19 @@
 import { useState } from "react";
 import { emit } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
+
+import WinterBackground from "../resources/assets/images/Backgrounds/Winter Forest.gif";
 import FallBackground from "../resources/assets/images/Backgrounds/Fall Forest.gif";
+import SpringBackground from "../resources/assets/images/Backgrounds/Spring Forest.gif";
+import SummerBackground from "../resources/assets/images/Backgrounds/Summer Forest.gif";
+
+const BG_MAP = {
+  fall: FallBackground,
+  winter: WinterBackground,
+  spring: SpringBackground,
+  summer: SummerBackground,
+};
+
 import "./AddAlarm.css";
 import "./ViewEditAlarm.css";
 
@@ -16,6 +28,8 @@ export default function ViewEditAlarm() {
   const [desc,  setDesc]  = useState(params.get("desc")  || "");
   const [time,  setTime]  = useState(params.get("time")  || "");
   const [error, setError] = useState("");
+
+  const bg = BG_MAP[localStorage.getItem("calisigh-bg") ?? "fall"];
 
   async function saveAlarm() {
     if (!title || !time) {
@@ -58,10 +72,9 @@ export default function ViewEditAlarm() {
 
   return (
     <>
-      <div
-        className="alarm-background"
-        style={{ backgroundImage: `url(${FallBackground})` }}
-      />
+      <div className="alarm-background" 
+      style={{ backgroundImage: `url(${bg})` }} />
+
       <div className="alarm-window">
         <h2>Edit Alarm</h2>
         <p>{`${month}/${day}/${year}`}</p>
