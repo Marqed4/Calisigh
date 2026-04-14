@@ -28,27 +28,29 @@ import rightarrow from "../resources/assets/images/ShapesSigns/Reflective Right 
 const MONTHS = [jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec];
 const NUMBERS = [n0, n1, n2, n3, n4, n5, n6, n7, n8, n9];
 
-export default function MonthYearDisplay({ currentDate, onPrev, onNext }) {
+export default function MonthYearDisplay({ currentDate, onPrev, onNext, viewYears }) {
   return (
     <div className="top-nav">
       <img src={leftarrow} alt="Previous" className="nav-arrow" onClick={onPrev} />
 
       <div className="main-month">
-        <img
-          src={MONTHS[currentDate.getMonth()]}
-          alt={currentDate.toLocaleString("default", { month: "long" })}
-          className="month-gif"
-        />
-        <div className="year-gifs">
-          {String(currentDate.getFullYear()).split("").map((digit, i) => (
-            <img
-              key={i}
-              src={NUMBERS[parseInt(digit)]}
-              alt={digit}
-              className="number-gif"
-            />
-          ))}
-        </div>
+        <button onClick={viewYears} className="month-year-btn">
+          <img
+            src={MONTHS[currentDate.getMonth()]}
+            alt={currentDate.toLocaleString("default", { month: "long" })}
+            className="month-gif"
+          />
+          <div className="year-gifs">
+            {String(currentDate.getFullYear()).split("").map((digit, i) => (
+              <img
+                key={i}
+                src={NUMBERS[parseInt(digit)]}
+                alt={digit}
+                className="number-gif"
+              />
+            ))}
+          </div>
+        </button>
       </div>
 
       <img src={rightarrow} alt="Next" className="nav-arrow" onClick={onNext} />

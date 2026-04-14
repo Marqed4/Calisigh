@@ -18,7 +18,7 @@ public class SystemDirectory
         base = System.getProperty("user.home") + "/.local/share";
     }
 
-    File workingDirectory = new File(base, "CustomCalendar");
+    File workingDirectory = new File(base, "Calisigh");
     workingDirectory.mkdirs();
     return new File(workingDirectory, filePath);
     }

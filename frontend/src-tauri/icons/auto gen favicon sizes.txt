@@ -1,0 +1,2 @@
+npx tauri icon
+npm run tauri build

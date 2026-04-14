@@ -21,7 +21,7 @@ public class AlarmActivation
 
     public AlarmActivation displayTray() throws Exception
     {
-        System.out.println("Displaying Windows 11 toast notification...");
+        System.out.println("Displaying Windows Toast Notification...");
 
         String safeTitle = title.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
         String safeDesc = desc.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
@@ -45,7 +45,7 @@ public class AlarmActivation
         pb.inheritIO();
         pb.start().waitFor();
 
-        System.out.println("Toast notification sent!");
+        System.out.println("Toast Notification Sent!");
 
         return this;
     }
@@ -54,7 +54,7 @@ public class AlarmActivation
     {
         try
         {
-            File sound = SystemDirectory.Directory("resources/assets/sounds/windows-10 calendar chime.wav");
+            File sound = SystemDirectory.Directory("resources/assets/sounds/chime.wav");
             AudioInputStream audioStream = AudioSystem.getAudioInputStream(sound);
 
             Clip clip = AudioSystem.getClip();

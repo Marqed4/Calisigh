@@ -1,15 +1,17 @@
 import { useState, useEffect, useRef } from "react";
 import { listen } from "@tauri-apps/api/event";
 import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
-import SettingsGif from "../resources/assets/images/ShapesSigns/Settings.gif?url";
+import Settings from "../resources/assets/images/ShapesSigns/Settings.gif?url";
 import WinterBackground from "../resources/assets/images/Backgrounds/Winter Forest.gif";
 import FallBackground from "../resources/assets/images/Backgrounds/Fall Forest.gif";
 import SpringBackground from "../resources/assets/images/Backgrounds/Spring Forest.gif";
 import SummerBackground from "../resources/assets/images/Backgrounds/Summer Forest.gif";
 import MonthYearDisplay from "./MonthYearDisplay.jsx";
+import ViewYears from "./ViewYears.jsx";
 import CalendarGrid from "./CalendarGrid.jsx";
 import Sidebar from "./Sidebar.jsx";
 import "./MonthYearDisplay.css";
+import ".//ViewYears.css"
 import "./Home.css";
 
 const BG_MAP = {
@@ -46,15 +48,16 @@ export default function Home() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [alarms, setAlarms] = useState([]);
   const [gridSize, setGridSize] = useState(0);
-  const mainRef = useRef(null);
+  const [isYearView, setIsYearView] = useState(false);
+  const Main = useRef(null);
 
-const [bg, setBg] = useState(BG_MAP[localStorage.getItem("calisigh-bg") ?? "fall"]);
+  const [bg, setBg] = useState(BG_MAP[localStorage.getItem("calisigh-bg") ?? "fall"]);
 
-useEffect(() => {
-  const onFocus = () => setBg(BG_MAP[localStorage.getItem("calisigh-bg") ?? "fall"]);
-  window.addEventListener("focus", onFocus);
-  return () => window.removeEventListener("focus", onFocus);
-}, []);
+  useEffect(() => {
+    const onFocus = () => setBg(BG_MAP[localStorage.getItem("calisigh-bg") ?? "fall"]);
+    window.addEventListener("focus", onFocus);
+    return () => window.removeEventListener("focus", onFocus);
+  }, []);
 
   useEffect(() => {
     loadAlarms();
@@ -68,8 +71,8 @@ useEffect(() => {
   }, []);
 
   function updateSize() {
-    if (mainRef.current) {
-      const { width, height } = mainRef.current.getBoundingClientRect();
+    if (Main.current) {
+      const { width, height } = Main.current.getBoundingClientRect();
       const navHeight = document.querySelector(".top-nav")?.getBoundingClientRect().height ?? 55;
       setGridSize(Math.min(width, height - navHeight));
     }
@@ -117,7 +120,7 @@ useEffect(() => {
     await openWindow("view-edit-alarm", `/view-edit-alarm?${query}`);
   }
 
-  const openSettingsWindow = () => openWindow("view-settings", "/view-settings", { title : "Settings"});
+  const openSettingsWindow = () => openWindow("view-settings", "/view-settings", { title: "Settings" });
 
   function changeMonth(offset) {
     const newDate = new Date(currentDate);
@@ -142,21 +145,35 @@ useEffect(() => {
     <div className="background-wrapper" style={{ backgroundImage: `url(${bg})` }}>
       <div className="app-container">
         <Sidebar currentDate={currentDate} calendarDays={calendarDays} />
-        <main className="main" ref={mainRef}>
-          <MonthYearDisplay
-            currentDate={currentDate}
-            onPrev={() => changeMonth(-1)}
-            onNext={() => changeMonth(1)}
-          />
-          <CalendarGrid
-            calendarDays={calendarDays}
-            currentDate={currentDate}
-            alarms={alarms}
-            onDayClick={openAlarmWindow}
-            onDeleteAlarm={deleteAlarm}
-            onEditAlarm={openEditWindow}
-            gridSize={gridSize}
-          />
+        <main className="main" ref={Main}>
+          {isYearView ? (
+            <ViewYears
+                currentDate={currentDate}
+                  onToggleYearView={() => setIsYearView(false)}
+                  onSelectYear={(year) => {
+                    setCurrentDate(new Date(year, 0, 1));
+                    setIsYearView(false);
+                  }}
+                />
+          ) : (
+            <>
+              <MonthYearDisplay
+                currentDate={currentDate}
+                onPrev={() => changeMonth(-1)}
+                onNext={() => changeMonth(1)}
+                viewYears={() => setIsYearView(true)}
+              />
+              <CalendarGrid
+                calendarDays={calendarDays}
+                currentDate={currentDate}
+                alarms={alarms}
+                onDayClick={openAlarmWindow}
+                onDeleteAlarm={deleteAlarm}
+                onEditAlarm={openEditWindow}
+                gridSize={gridSize}
+              />
+            </>
+          )}
         </main>
         <a
           className="settings-link"
@@ -164,7 +181,7 @@ useEffect(() => {
           onClick={(e) => { e.preventDefault(); openSettingsWindow(); }}
           style={{ cursor: "pointer" }}
         >
-          <img src={SettingsGif} className="settings-header" alt="Settings" />
+          <img src={Settings} className="settings-header" alt="Settings" />
         </a>
       </div>
     </div>

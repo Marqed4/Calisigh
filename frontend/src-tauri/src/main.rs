@@ -7,6 +7,12 @@ use tauri::Manager;
 
 fn main() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
+            // Focus the existing window if a second instance tries to open
+            if let Some(window) = app.get_webview_window("main") {
+                let _ = window.set_focus();
+            }
+        }))
         .plugin(tauri_plugin_opener::init())
         .setup(|app| {
             let exe_dir = std::env::current_exe()
@@ -26,17 +32,28 @@ fn main() {
 
             println!("Found JAR at: {:?}", jar_path);
 
-            let result = Command::new("java")
-                .arg("-jar")
-                .arg(&jar_path)
-                .stdin(Stdio::null())
-                .stdout(Stdio::inherit())
-                .stderr(Stdio::inherit())
-                .spawn();
+            // Check if backend is already running
+            let already_running = Command::new("cmd")
+                .args(["/C", "tasklist | findstr CustomCalendar.jar"])
+                .output()
+                .map(|o| !o.stdout.is_empty())
+                .unwrap_or(false);
 
-            match result {
-                Ok(_) => println!("Backend started!"),
-                Err(e) => println!("Failed: {}", e),
+            if !already_running {
+                let result = Command::new("java")
+                    .arg("-jar")
+                    .arg(&jar_path)
+                    .stdin(Stdio::null())
+                    .stdout(Stdio::inherit())
+                    .stderr(Stdio::inherit())
+                    .spawn();
+
+                match result {
+                    Ok(_) => println!("Backend started!"),
+                    Err(e) => println!("Failed: {}", e),
+                }
+            } else {
+                println!("Backend already running, skipping.");
             }
 
             Ok(())

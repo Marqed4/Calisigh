@@ -137,23 +137,25 @@
 }
 
 .chat-send {
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.25);
-  color: #fff;
-  border-radius: 8px;
-  padding: 6px 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  font-size: 0.85rem;
-  transform: translateY(-8.5px);
+  width: 40px;
+  height: 40px;
+  overflow: hidden;
+  background: none;
+  border: none;
+  transform: translateY(-5.5px);
 }
 
-.chat-send:hover {
-  background: rgba(255,255,255,0.25);
-}
-
-.chat-send:disabled {
-  opacity: 0.5;
-  cursor: default;
+.chat-send img {
+  width: 200px;
+  height: auto;
+  flex-shrink: 0;
+  transform: scale(0.40);
+  transform-origin: center;
+  object-position: 50% 50%;
 }
 
 .chat-end {

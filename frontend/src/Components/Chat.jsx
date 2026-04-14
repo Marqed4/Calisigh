@@ -5,6 +5,8 @@ import FallBackground from "../resources/assets/images/Backgrounds/Fall Forest.g
 import SpringBackground from "../resources/assets/images/Backgrounds/Spring Forest.gif";
 import SummerBackground from "../resources/assets/images/Backgrounds/Summer Forest.gif";
 
+import Send from "../resources/assets/images/ShapesSigns/Semi Reflective Guitar.gif";
+
 import "./Chat.css";
 
 const appWindow = getCurrentWebviewWindow();
@@ -111,7 +113,10 @@ export default function Chat() {
             rows={2}
           />
           <button className="chat-send" onClick={sendMessage} disabled={loading}>
-            ➤
+            <img src={Send} 
+            alt="Send"
+            className="chat-send" 
+            />
           </button>
         </div>
       </div>

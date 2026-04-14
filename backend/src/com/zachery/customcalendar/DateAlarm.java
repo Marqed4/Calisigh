@@ -1,14 +1,14 @@
 package com.zachery.customcalendar;
 
-import java.time.LocalDateTime;
-import java.util.PriorityQueue;
-import java.util.ArrayList;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.Duration;
-import java.io.FileWriter;
-import java.util.Scanner;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.PriorityQueue;
+import java.util.Scanner;
 
 public class DateAlarm
 {
@@ -62,7 +62,7 @@ public class DateAlarm
         alarmDataQueue.add(alarm);
         alarmDataList.add(alarm);
 
-        try (FileWriter fw = new FileWriter(SystemDirectory.ObtainFile("notifications/notifications.txt"), true);
+        try (FileWriter fw = new FileWriter(SystemDirectory.ObtainFile("Events/Events.txt"), true);
         PrintWriter pw = new PrintWriter(fw)) 
         {
             pw.print(time + "|&^");
@@ -78,7 +78,7 @@ public class DateAlarm
         alarmDataQueue.removeIf(a -> a.time().equals(time));
         alarmDataList.removeIf(a -> a.time().equals(time));
 
-        java.io.File file = SystemDirectory.ObtainFile("notifications/notifications.txt");
+        java.io.File file = SystemDirectory.ObtainFile("Events/Events.txt");
         List<String> lines = new ArrayList<>();
 
         try (Scanner scan = new Scanner(file)) {
@@ -105,7 +105,7 @@ public class DateAlarm
         alarmDataQueue.removeIf(a -> a.time().equals(oldTime));
         alarmDataList.removeIf(a -> a.time().equals(oldTime));
 
-        java.io.File file = SystemDirectory.ObtainFile("notifications/notifications.txt");
+        java.io.File file = SystemDirectory.ObtainFile("Events/Events.txt");
         List<String> lines = new ArrayList<>();
 
         try (Scanner scan = new Scanner(file)) {
@@ -177,7 +177,7 @@ public class DateAlarm
 
     private Scanner getAllNotificationData() throws IOException 
     {
-        java.io.File file = SystemDirectory.ObtainFile("notifications/notifications.txt");
+        java.io.File file = SystemDirectory.ObtainFile("Events/Events.txt");
         if (!file.exists()) 
         {
             file.getParentFile().mkdirs();
