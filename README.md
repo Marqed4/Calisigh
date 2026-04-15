@@ -3,52 +3,62 @@
   <p>
     <img src="frontend/src-tauri/icons/128x128.png" title="Calisigh" alt="Calisigh logo" width="100" />
   </p>
+
+  <h1>𝐶𝑎𝑙𝑖𝑠𝑖𝑔ℎ</h1>
+  <p>A feature‑rich Midwestern-emo calendar </p>
+
   <p>
-    <h1>𝐶𝑎𝑙𝑖𝑠𝑖𝑔ℎ</h1>
-    A feature-rich calendar that remembers the days you tried to forget.
-  </p>
-  <p>
-    <a href="Marqed.it/Calisigh">🌐Visit Us</a>
-    &nbsp;&nbsp;
+    <a href="https://marqed.it/Calisigh">🌐 Visit Us</a>
   </p>
   <br/>
-
-Calisigh is a calendar app that doesn't gaslight you. open it, add your events, move on. Melodrama included free of charge.
-
----
+</div>
+<div align="center">
+  Open it, add your events, and keep going. The melodrama comes included.
 </div>
 
-### Views
+---
+
+<h2 align="center">Views</h2>
 
 | | |
 |---|---|
-| **View by month** ! The classic grid. Your chaos, but... organized. | **View by year** ! Zoom out. Face the whole year at once. |
-| ![view by month](examples/View%20by%20Month.png) | ![view by year](examples/View%20by%20Year.png) |
-| **Teen spirit chatbot** ! Yea, she has opinions about your schedule. Deal with it. | **Settings & Themes** ! Customize everything. It's your emotional support app. |
-| ![chatbot](examples/Chat%201.png) | ![settings](examples/Settings%20Background%20Change.png) |
+| <p align="center"><strong>View by month</strong><br/>The classic grid. Your chaos arranged into neat little boxes.</p> | <p align="center"><strong>View by year</strong><br/>A full year on one screen. It feels bigger when you see it all at once.</p> |
+| <p align="center"><img src="examples/View%20by%20Month.png" /></p> | <p align="center"><img src="examples/View%20by%20Year.png" /></p> |
+| <p align="center"><strong>Teen spirit chatbot</strong><br/>She has thoughts about your schedule and she is not subtle about them.</p> | <p align="center"><strong>Settings and themes</strong><br/>Change the look and feel until it matches whatever mood you are in.</p> |
+| <p align="center"><img src="examples/Chat%201.png" /></p> | <p align="center"><img src="examples/Settings%20Background%20Change.png" /></p> |
 
 ---
 
-### Features
+<h2 align="center">Features</h2>
 
-- **Melodramatic event management** ! Create, read, update, and delete events with the gravity they deserve.
-- **Teen spirit AI chatbot** ! An integrated AI assistant with the personality of a 19-year-old from Illinois who just started a basement band. she has opinions.
-- **Customizable Themes, Notifications & Alert Sounds** ! Your calendar should match your mood swings. *(in progress...)*
-  
----
+<div align="left">
 
-### Ethics
+- **Melodramatic event management**  
+  Create, edit, and delete events with more emotion than the situation requires.
 
-Calisigh takes zero liability for events you add, forget, or dramatically reschedule. The app never stores your data anywhere weird... Your bad decisions are entirely your own.
+- **Teen spirit AI chatbot**  
+  A 19‑year‑old from the Midwest who comments on your calendar like it’s a diary you left open.
 
----
+- **Custom themes, notifications and alert sounds**  
+  Your calendar should look and sound like the mood you are in. (In progress)
 
-### Contributing
-
-If you're considering contributing to Calisigh, first of all, thank you! Check the [contribution guidelines](CONTRIBUTING.md) before getting started. Opinions are always welcomed.
+</div>
 
 ---
 
-### License
+<h2 align="center">Ethics</h2>
 
-Unless specified otherwise, this repository is licensed under [AGPL-3.0](LICENSE).
+Calisigh takes zero liability for your pointless events. Your choices are yours to carry.
+
+---
+
+<h2 align="center">Contributing</h2>
+
+- If you're considering contributing to Calisigh, first of all, thank you!  
+- Check the [Contribution Guidelines](CONTRIBUTING.md) before getting started. Opinions are welcomed. Even the dramatic ones.
+
+---
+
+<h2 align="center">License</h2>
+
+Unless specified otherwise, this repository is licensed under [AGPL-3.0](LICENSE)
