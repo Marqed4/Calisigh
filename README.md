@@ -4,7 +4,7 @@
     <img src="frontend/src-tauri/icons/128x128.png" title="calisigh" alt="calisigh logo" width="100" />
   </p>
   <p>
-    <h1>C𝑎𝑙𝑖𝑠𝑖𝑔ℎ</h1>
+    <h1>𝐶𝑎𝑙𝑖𝑠𝑖𝑔ℎ</h1>
     A feature-rich calendar that remembers the days you tried to forget.
   </p>
   <p>
