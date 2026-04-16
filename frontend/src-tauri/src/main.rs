@@ -83,6 +83,16 @@ fn main() {
 
             Ok(())
         })
+        
+        .on_window_event(|window, event| {
+            if let tauri::WindowEvent::Destroyed = event {
+                if window.label() == "main" {
+                    let _ = Command::new("cmd")
+                        .args(["/C", "taskkill /F /IM java.exe"])
+                        .spawn();
+                }
+            }
+        })
         .invoke_handler(tauri::generate_handler![commands::call_java])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
