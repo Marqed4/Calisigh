@@ -55,8 +55,8 @@ import tLetter from "../resources/assets/images/Letters/T.gif?url";
 import wLetter from "../resources/assets/images/Letters/W.gif?url";
 import fLetter from "../resources/assets/images/Letters/F.gif?url";
 
-import FAQ from "../resources/assets/images/ShapesSigns/FAQ.gif?url";
-import Chat from "../resources/assets/images/ShapesSigns/Chat.gif?url";
+import FAQ from "../resources/assets/images/Signs/FAQ.gif?url";
+import Chat from "../resources/assets/images/Signs/Chat.gif?url";
 
 const MONTHS = [jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec];
 

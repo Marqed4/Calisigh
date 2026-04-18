@@ -161,6 +161,43 @@ fn main() {
                 .unwrap_or(false);
 
             if !already_running {
+                #[cfg(debug_assertions)]
+                let result = {
+                    let mut child = Command::new("java")
+                        .arg("-jar")
+                        .arg(&jar_path)
+                        .stdin(Stdio::null())
+                        .stdout(Stdio::piped())
+                        .stderr(Stdio::piped())
+                        .creation_flags(CREATE_NO_WINDOW)
+                        .spawn();
+
+                    if let Ok(ref mut child) = child {
+                        if let Some(stdout) = child.stdout.take() {
+                            std::thread::spawn(move || {
+                                use std::io::{BufRead, BufReader};
+                                for line in BufReader::new(stdout).lines() {
+                                    if let Ok(line) = line {
+                                        println!("[java] {}", line);
+                                    }
+                                }
+                            });
+                        }
+                        if let Some(stderr) = child.stderr.take() {
+                            std::thread::spawn(move || {
+                                use std::io::{BufRead, BufReader};
+                                for line in BufReader::new(stderr).lines() {
+                                    if let Ok(line) = line {
+                                        eprintln!("[java:err] {}", line);
+                                    }
+                                }
+                            });
+                        }
+                    }
+                    child
+                };
+
+                #[cfg(not(debug_assertions))]
                 let result = Command::new("java")
                     .arg("-jar")
                     .arg(&jar_path)
@@ -173,7 +210,7 @@ fn main() {
                 #[cfg(debug_assertions)]
                 match result {
                     Ok(_) => println!("Backend started!"),
-                    Err(e) => println!("Failed: {}", e),
+                    Err(e) => println!("Failed to start backend: {}", e),
                 }
                 #[cfg(not(debug_assertions))]
                 let _ = result;

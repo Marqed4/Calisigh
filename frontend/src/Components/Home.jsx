@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { listen } from "@tauri-apps/api/event";
+import { convertFileSrc } from "@tauri-apps/api/core";
 import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
-import Settings from "../resources/assets/images/ShapesSigns/Settings.gif?url";
+import Settings from "../resources/assets/images/Signs/Settings.gif?url";
 import WinterBackground from "../resources/assets/images/Backgrounds/Winter Forest.gif";
 import FallBackground from "../resources/assets/images/Backgrounds/Fall Forest.gif";
 import SpringBackground from "../resources/assets/images/Backgrounds/Spring Forest.gif";
@@ -20,6 +21,14 @@ const BG_MAP = {
   spring: SpringBackground,
   summer: SummerBackground,
 };
+
+function getBackground() {
+  const saved = localStorage.getItem("calisigh-bg") ?? "fall";
+  if (BG_MAP[saved]) return BG_MAP[saved];
+  const customs = JSON.parse(localStorage.getItem("calisigh-custom-bgs") ?? "[]");
+  const entry = customs.find(e => e.split("|&")[0] === saved);
+  return entry ? convertFileSrc(entry.split("|&")[1]) : BG_MAP["fall"];
+}
 
 async function openWindow(label, url, options = {}) {
   console.log("openWindow called", label);
@@ -44,6 +53,18 @@ async function openWindow(label, url, options = {}) {
   }
 }
 
+async function waitForBackend(retries = 20, delayMs = 500) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const res = await fetch("http://localhost:4567/api/alarms");
+      if (res.ok) return true;
+    } catch (_) {}
+    await new Promise(r => setTimeout(r, delayMs));
+  }
+  console.error("Backend never became ready after retries");
+  return false;
+}
+
 export default function Home() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [alarms, setAlarms] = useState([]);
@@ -51,16 +72,18 @@ export default function Home() {
   const [isYearView, setIsYearView] = useState(false);
   const Main = useRef(null);
 
-  const [bg, setBg] = useState(BG_MAP[localStorage.getItem("calisigh-bg") ?? "fall"]);
+  const [bg, setBg] = useState(getBackground());
 
   useEffect(() => {
-    const onFocus = () => setBg(BG_MAP[localStorage.getItem("calisigh-bg") ?? "fall"]);
+    const onFocus = () => setBg(getBackground());
     window.addEventListener("focus", onFocus);
     return () => window.removeEventListener("focus", onFocus);
   }, []);
 
   useEffect(() => {
-    loadAlarms();
+    waitForBackend().then(ready => {
+      if (ready) loadAlarms();
+    });
     const unlisten = listen("alarm-saved", () => loadAlarms());
     updateSize();
     window.addEventListener("resize", updateSize);
@@ -148,13 +171,13 @@ export default function Home() {
         <main className="main" ref={Main}>
           {isYearView ? (
             <ViewYears
-                currentDate={currentDate}
-                  onToggleYearView={() => setIsYearView(false)}
-                  onSelectYear={(year) => {
-                    setCurrentDate(new Date(year, 0, 1));
-                    setIsYearView(false);
-                  }}
-                />
+              currentDate={currentDate}
+              onToggleYearView={() => setIsYearView(false)}
+              onSelectYear={(year) => {
+                setCurrentDate(new Date(year, 0, 1));
+                setIsYearView(false);
+              }}
+            />
           ) : (
             <>
               <MonthYearDisplay

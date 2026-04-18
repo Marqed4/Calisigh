@@ -16,58 +16,52 @@ public class DateAlarm
     List<AlarmRecord> alarmDataList = new ArrayList<>();
 
     private Thread alarmThread = null;
+    private AlarmSounds alarmSounds;
 
-    public DateAlarm() throws IOException 
+    public DateAlarm(AlarmSounds alarmSounds) throws IOException
     {
-        Scanner scan = getAllNotificationData();
+        this.alarmSounds = alarmSounds;
 
-        while (scan.hasNextLine()) 
+        try (Scanner scan = getAllNotificationData())
         {
-            String line = scan.nextLine();
-            String[] parts = line.split("\\|&\\^");
+            while (scan.hasNextLine())
+            {
+                String line = scan.nextLine().trim();
+                if (line.isEmpty()) continue;
 
-            String title = parts[1].replace("<NL>", "\n");
-            String desc  = (parts.length > 2 ? parts[2] : "").replace("<aNL>", "\n");
+                String[] parts = line.split("\\|&\\^");
+                if (parts.length < 2) continue;
 
-            AlarmRecord alarm = new AlarmRecord(
-                LocalDateTime.parse(parts[0]),
-                title,
-                desc
-            );
+                LocalDateTime alarmTime = LocalDateTime.parse(parts[0]);
 
-            alarmDataQueue.add(alarm);
-        }
+                String title = parts[1].replace("<NL>", "\n");
+                String desc  = (parts.length > 2 ? parts[2] : "").replace("<aNL>", "\n");
 
-        alarmDataList = new ArrayList<>(alarmDataQueue);
+                AlarmRecord alarm = new AlarmRecord(alarmTime, title, desc);
 
-        while (!alarmDataQueue.isEmpty()) 
-        {
-            AlarmRecord next = alarmDataQueue.peek();
-            long delay = Duration.between(LocalDateTime.now(), next.time()).getSeconds();
+                alarmDataList.add(alarm); // always add to list (frontend sees it)
 
-            if (delay <= 0) {
-                alarmDataQueue.poll();
-            } else {
-                break;
+                if (alarmTime.isAfter(LocalDateTime.now()))
+                    alarmDataQueue.add(alarm); // only add future alarms to queue (firing)
             }
         }
+            checkAlarm();
     }
 
-    public void setAlarm(LocalDateTime time, String title, String desc) throws IOException 
+    public void setAlarm(LocalDateTime time, String title, String desc) throws IOException
     {
         String safeTitle = title.replace("\n", "<NL>");
-        String safeDesc = desc.replace("\n", "<aNL>");
+        String safeDesc  = desc.replace("\n", "<aNL>");
 
         AlarmRecord alarm = new AlarmRecord(time, title, desc);
+
         alarmDataQueue.add(alarm);
         alarmDataList.add(alarm);
 
         try (FileWriter fw = new FileWriter(SystemDirectory.ObtainFile("Events/Events.txt"), true);
-        PrintWriter pw = new PrintWriter(fw)) 
+             PrintWriter pw = new PrintWriter(fw))
         {
-            pw.print(time + "|&^");
-            pw.print(safeTitle + "|&^");
-            pw.print(safeDesc + "\n");
+            pw.println(time + "|&^" + safeTitle + "|&^" + safeDesc);
         }
 
         checkAlarm();
@@ -78,24 +72,7 @@ public class DateAlarm
         alarmDataQueue.removeIf(a -> a.time().equals(time));
         alarmDataList.removeIf(a -> a.time().equals(time));
 
-        java.io.File file = SystemDirectory.ObtainFile("Events/Events.txt");
-        List<String> lines = new ArrayList<>();
-
-        try (Scanner scan = new Scanner(file)) {
-            while (scan.hasNextLine()) {
-                String line = scan.nextLine();
-                String[] parts = line.split("\\|&\\^");
-                if (!LocalDateTime.parse(parts[0]).equals(time)) {
-                    lines.add(line);
-                }
-            }
-        }
-
-        try (PrintWriter pw = new PrintWriter(file)) {
-            for (String line : lines) {
-                pw.println(line);
-            }
-        }
+        rewriteEventsFile();
     }
 
     public void updateAlarm(String id, LocalDateTime newTime, String newTitle, String newDesc) throws IOException
@@ -105,24 +82,7 @@ public class DateAlarm
         alarmDataQueue.removeIf(a -> a.time().equals(oldTime));
         alarmDataList.removeIf(a -> a.time().equals(oldTime));
 
-        java.io.File file = SystemDirectory.ObtainFile("Events/Events.txt");
-        List<String> lines = new ArrayList<>();
-
-        try (Scanner scan = new Scanner(file)) {
-            while (scan.hasNextLine()) {
-                String line = scan.nextLine();
-                String[] parts = line.split("\\|&\\^");
-                if (!LocalDateTime.parse(parts[0]).equals(oldTime)) {
-                    lines.add(line);
-                }
-            }
-        }
-
-        try (PrintWriter pw = new PrintWriter(file)) {
-            for (String line : lines) {
-                pw.println(line);
-            }
-        }
+        rewriteEventsFile();
 
         setAlarm(newTime, newTitle, newDesc);
     }
@@ -132,53 +92,105 @@ public class DateAlarm
         if (alarmThread != null && alarmThread.isAlive())
         {
             alarmThread.interrupt();
+            try {
+                alarmThread.join(500);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
         }
 
-        alarmThread = new Thread(() -> 
+        alarmThread = new Thread(() ->
         {
-            while (!alarmDataQueue.isEmpty()) 
+            System.out.println("=== THREAD STARTED, queue size: " + alarmDataQueue.size());
+
+            while (!Thread.currentThread().isInterrupted() && !alarmDataQueue.isEmpty())
             {
                 AlarmRecord nextAlarm = alarmDataQueue.peek();
                 if (nextAlarm == null) break;
 
-                long delay = Duration.between(LocalDateTime.now(), nextAlarm.time()).getSeconds();
+                long delayMs = Duration.between(LocalDateTime.now(), nextAlarm.time()).toMillis();
+                System.out.println("=== Waiting " + delayMs + "ms for: " + nextAlarm.title());
 
-                try {
-                    if (delay > 0) 
+                try
+                {
+                    if (delayMs > 0)
+                        Thread.sleep(delayMs);
+
+                    System.out.println("=== SLEEP COMPLETE for: " + nextAlarm.title());
+
+                    if (Thread.currentThread().isInterrupted())
+                        return;
+
+                    AlarmRecord cannon = alarmDataQueue.poll();
+                    if (cannon == null) continue;
+
+                    System.out.println("=== ALARM FIRING: " + cannon.title());
+
+                    String selected = alarmSounds.getSelectedSound();
+                    System.out.println("=== Selected sound: " + selected);
+
+                    String soundPath = null;
+
+                    if (selected != null && !selected.isEmpty())
                     {
-                        Thread.sleep(delay * 1000);
+                        soundPath = alarmSounds.getAllSounds()
+                            .stream()
+                            .filter(e -> AlarmSounds.getDisplayName(e).equals(selected))
+                            .findFirst()
+                            .map(AlarmSounds::getFilePath)
+                            .orElse(null);
                     }
 
-                    AlarmRecord CANNON = alarmDataQueue.poll();
-                    new AlarmActivation
-                    (
-                        CANNON.title(),
-                        CANNON.desc()
-                    )
-                    .displayTray()
-                    .playSound();
-                } 
-                catch (InterruptedException e) 
+                    System.out.println("=== Sound Path: " + soundPath);
+
+                    AlarmActivation activation = new AlarmActivation(cannon.title(), cannon.desc());
+
+                    System.out.println("=== Calling displayTray...");
+                    activation.displayTray();
+
+                    System.out.println("=== Calling playSound...");
+                    activation.playSound(soundPath);
+
+                    System.out.println("=== Done.");
+                }
+                catch (InterruptedException e)
                 {
-                    Thread.interrupted();
-                    continue;
-                } 
-                catch (Exception e) 
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+                catch (Exception e)
                 {
                     System.err.println("Error firing alarm: " + e.getMessage());
                     e.printStackTrace();
                 }
             }
+
+            System.out.println("=== THREAD EXITING, queue size: " + alarmDataQueue.size());
         });
 
         alarmThread.setDaemon(true);
         alarmThread.start();
     }
 
-    private Scanner getAllNotificationData() throws IOException 
+    private void rewriteEventsFile() throws IOException
     {
         java.io.File file = SystemDirectory.ObtainFile("Events/Events.txt");
-        if (!file.exists()) 
+
+        try (PrintWriter pw = new PrintWriter(file))
+        {
+            for (AlarmRecord alarm : alarmDataList)
+            {
+                String safeTitle = alarm.title().replace("\n", "<NL>");
+                String safeDesc  = alarm.desc().replace("\n", "<aNL>");
+                pw.println(alarm.time() + "|&^" + safeTitle + "|&^" + safeDesc);
+            }
+        }
+    }
+
+    private Scanner getAllNotificationData() throws IOException
+    {
+        java.io.File file = SystemDirectory.ObtainFile("Events/Events.txt");
+        if (!file.exists())
         {
             file.getParentFile().mkdirs();
             file.createNewFile();

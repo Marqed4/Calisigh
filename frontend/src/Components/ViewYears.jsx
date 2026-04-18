@@ -12,10 +12,10 @@ import n7 from "../resources/assets/images/Numbers/7.gif";
 import n8 from "../resources/assets/images/Numbers/8.gif";
 import n9 from "../resources/assets/images/Numbers/9.gif";
 
-import Years from "../resources/assets/images/ShapesSigns/Years.gif";
+import Years from "../resources/assets/images/Signs/Years.gif";
 
-import leftarrow from "../resources/assets/images/ShapesSigns/Reflective Left Arrow.gif";
-import rightarrow from "../resources/assets/images/ShapesSigns/Reflective Right Arrow.gif";
+import leftarrow from "../resources/assets/images/Signs/Reflective Left Arrow.gif";
+import rightarrow from "../resources/assets/images/Signs/Reflective Right Arrow.gif";
 
 const NUMBERS = [n0, n1, n2, n3, n4, n5, n6, n7, n8, n9];
 

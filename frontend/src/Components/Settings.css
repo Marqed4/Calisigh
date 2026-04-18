@@ -1,36 +1,293 @@
-.settings-bg-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
-  margin: 8px 0;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-.settings-bg-option {
+body {
+  background: transparent;
+  overflow: hidden;
+}
+
+.settings-background {
+  position: fixed;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.settings-background::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.settings-root {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.settings-main {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  padding: 6px;
-  border-radius: 6px;
-  border: 2px solid transparent;
-  cursor: pointer;
-  background: rgba(255,255,255,0.06);
-  transition: border-color 0.15s;
-  font-size: 0.78rem;
+  height: 100%;
+  overflow: hidden;
+}
+
+.settings-main-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 16px 0 16px;
+  min-height: 0;
+}
+
+.settings-title {
+  margin: 0 0 4px 0;
+  font-size: 1.1rem;
   color: #e8e8e8;
 }
 
-.settings-bg-option:hover {
-  background: rgba(255,255,255,0.12);
+.settings-subtitle {
+  margin: 0 0 8px 0;
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.6);
 }
 
-.settings-bg-option.selected {
-  border-color: rgba(255,255,255,0.6);
+.settings-bg-picker {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  padding-bottom: 12px;
 }
 
-.settings-bg-thumb {
+.settings-bg-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 6px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  overflow: hidden;
+  background: rgba(255,255,255,0.04);
+  transition: border-color 0.15s;
+}
+
+.settings-bg-card--selected {
+  border-color: rgba(255,255,255,0.7);
+}
+
+.settings-bg-card:hover {
+  border-color: rgba(255,255,255,0.3);
+}
+
+.settings-bg-img {
   width: 100%;
-  height: 60px;
+  height: 80px;
   object-fit: cover;
-  border-radius: 4px;
+  display: block;
+}
+
+.settings-bg-label {
+  font-size: 0.75rem;
+  color: #e8e8e8;
+  padding: 3px 0;
+}
+
+.settings-bg-remove {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  height: 16px;
+  width: auto;
+  cursor: pointer;
+  opacity: 0.85;
+}
+
+.settings-bg-remove:hover {
+  opacity: 0.5;
+}
+
+.settings-action-gif {
+  height: 70px;
+  width: auto;
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.55);
+  border-radius: 999px;
+  padding: 4px 5px;
+  margin-top: -18px;
+}
+
+.settings-action-gif:hover {
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.settings-action-gif:active {
+  background: rgba(0, 0, 0, 0.75);
+}
+
+.settings-actions {
+  flex-shrink: 0;
+  position: relative;
+  z-index: 5;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  padding: 6px 0;
+  height: auto;
+  border-top: 3px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(6px);
+  overflow: visible;
+}
+
+.settings-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+  border-radius: 12px;
+  padding: 4px 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+  height: 37.5px;
+  overflow: hidden;
+}
+
+.settings-action-btn:hover {
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.settings-action-btn:active {
+  background: rgba(0, 0, 0, 0.75);
+}
+
+.settings-upload-backgrounds-gif,
+.settings-save-gif,
+.settings-cancel-gif {
+  height: 40px;
+  width: auto;
+  cursor: pointer;
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+  display: block;
+}
+
+.settings-upload-songs-gif {
+  height: 50px;
+  overflow: hidden;
+  width: auto;
+  cursor: pointer;
+}
+
+.settings-sounds {
+  width: 160px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: rgba(0,0,0,0.72);
+  border-left: 1px solid rgba(255,255,255,0.08);
+  isolation: isolate;
+}
+
+.settings-sounds-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 12px 10px 0 10px;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.settings-sounds-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+  padding-bottom: 8px;
+}
+
+.settings-sound-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 10px;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background: rgba(255,255,255,0.10);
+  cursor: pointer;
+  font-size: 0.82rem;
+  color: #e8e8e8;
+  transition: background 0.15s, border-color 0.15s;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.settings-sound-card--selected {
+  border-color: rgba(255,255,255,0.7);
+  background: rgba(255,255,255,0.16);
+}
+
+.settings-sound-card:hover {
+  border-color: rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.06);
+}
+
+.settings-sound-card:active {
+  background: rgba(0, 0, 0, 0.75);
+  border-color: rgba(255,255,255,0.2);
+}
+
+.settings-sound-card span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  margin-right: 6px;
+}
+
+.settings-sound-remove {
+  height: 16px;
+  width: auto;
+  cursor: pointer;
+  opacity: 0.85;
+  flex-shrink: 0;
+}
+
+.settings-sound-remove:hover {
+  opacity: 0.5;
+}
+
+.settings-sounds-footer {
+  flex-shrink: 0;
+  position: relative;
+  height: px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-top: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(6px);
+}
+
+.settings-sounds-divider {
+  width: 80%;
+  height: 1px;
+  background: rgba(255,255,255,0.12);
 }

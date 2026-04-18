@@ -1,12 +1,14 @@
 package com.zachery.customcalendar;
 
-import static spark.Spark.*;
-import com.google.gson.Gson;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
+
+import com.google.gson.Gson;
+
+import static spark.Spark.post;
 
 public class Chat {
 
@@ -33,7 +35,7 @@ public class Chat {
 
                 HttpResponse<String> response = http.send(request, HttpResponse.BodyHandlers.ofString());
                 String rawBody = response.body();
-                System.out.println("Ollama raw response: " + rawBody);
+                System.out.println("Ollama raws response: " + rawBody);
 
                 OllamaResponse ollamaRes = gson.fromJson(rawBody, OllamaResponse.class);
 
@@ -62,7 +64,7 @@ public class Chat {
             "Your job is to help the user {a fellow midwestern emo person} with questions about " +
             "their goals, events, schedules, reminders, or anything calendar-related. Sometimes you will even ask them about " +
             "their emotions and you'll randomly recommend cool midwestern emo songs that can be found within the company " +
-            "library, be concise and midwestern emo. You're kind of like Rodrick from diary of a wimpy kid...";
+            "library, be concise and midwestern emo. You're kind of like Rodrick from diary of a wimpy kid... if was a Midwestern-emo girl!";
 
         StringBuilder messages = new StringBuilder("[");
         messages.append("{\"role\":\"system\",\"content\":").append(gson.toJson(systemPrompt)).append("}");

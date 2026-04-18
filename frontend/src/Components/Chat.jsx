@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
+import { convertFileSrc } from "@tauri-apps/api/core";
+
 import WinterBackground from "../resources/assets/images/Backgrounds/Winter Forest.gif";
 import FallBackground from "../resources/assets/images/Backgrounds/Fall Forest.gif";
 import SpringBackground from "../resources/assets/images/Backgrounds/Spring Forest.gif";
 import SummerBackground from "../resources/assets/images/Backgrounds/Summer Forest.gif";
 
-import Send from "../resources/assets/images/ShapesSigns/Semi Reflective Guitar.gif";
+import Send from "../resources/assets/images/Signs/Semi Reflective Guitar.gif";
 
 import "./Chat.css";
 
@@ -25,29 +27,65 @@ export default function Chat() {
   const [alarms, setAlarms] = useState([]);
   const messagesEndRef = useRef(null);
 
-  const bg = BG_MAP[localStorage.getItem("calisigh-bg") ?? "fall"];
+  const [bg, setBg] = useState(null);
 
   useEffect(() => {
     async function init() {
-      try {
-        const res = await fetch("http://localhost:4567/api/alarms");
-        const data = await res.json();
-        setAlarms(data);
-        const topics = data.map(a => `"${a.title}" on ${new Date(a.time).toLocaleDateString()}`);
-        const greeting = topics.length > 0
-          ? "Hey... I can see what you're up to. So, like... what do you want?"
-          : "Hey... looks like you have no plans. Who would've guessed. Feel free to talk to me anyway.";
-        setMessages([{ role: "assistant", content: greeting }]);
-      } catch (err) {
-        setMessages([{ role: "assistant", content: "Hey... looks like you have no plans. Who would've guessed. Feel free to talk to me anyway." }]);
+        let loadedAlarms = [];
+        try {
+            const res = await fetch("http://localhost:4567/api/alarms");
+            loadedAlarms = await res.json();
+            setAlarms(loadedAlarms);
+        } catch (_) {}
+
+        const alarmContext = loadedAlarms.length > 0
+            ? `The user's calendar events are: ${loadedAlarms.map(a =>
+                `"${a.title}" at ${new Date(a.time).toLocaleString()}${a.desc ? ` (${a.desc})` : ""}`
+              ).join("; ")}.`
+            : "The user has no calendar events.";
+
+        setLoading(true);
+        try {
+            const res = await fetch("http://localhost:4567/api/chat/greeting", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ alarmContext }),
+            });
+            const data = await res.json();
+            setMessages([{ role: "assistant", content: data.reply ?? "Hey... like, what do you want?" }]);
+        } catch (_) {
+            setMessages([{ role: "assistant", content: "Hey... like, what do you want?" }]);
+        }
+        setLoading(false);
       }
-    }
-    init();
+      init();
   }, []);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    async function loadBg() {
+      const savedBg = localStorage.getItem("calisigh-bg") ?? "fall";
+
+      if (BG_MAP[savedBg]) {
+        setBg(BG_MAP[savedBg]);
+        return;
+      }
+
+      // supporting custom background, but only updates upon forcereload
+      try {
+        const res = await fetch("http://localhost:4567/api/backgrounds");
+        const data = await res.json();
+        const entry = data.find(e => e.split("|&")[0] === savedBg);
+        if (entry) {
+          setBg(convertFileSrc(entry.split("|&")[1]));
+        } else {
+          setBg(BG_MAP["fall"]);
+        }
+      } catch {
+        setBg(BG_MAP["fall"]);
+      }
+    }
+    loadBg();
+  }, []);
 
   const sendMessage = async () => {
     if (!input.trim() || loading) return;
@@ -85,7 +123,7 @@ export default function Chat() {
 
   return (
     <div style={{ position: "relative", height: "100vh" }}>
-      <div className="chat-background" style={{ backgroundImage: `url(${bg})` }} />
+      <div className="chat-background" style={{ backgroundImage: bg ? `url(${bg})` : undefined }} />
       <div className="chat-wrapper">
         <div className="chat-header">
           <span>Calisigh Helper</span>
