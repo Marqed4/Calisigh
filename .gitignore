@@ -11,6 +11,8 @@ node_modules
 dist
 dist-ssr
 *.local
+jpackage-output
+
 
 # Editor directories and files
 .vscode/*
@@ -22,3 +24,4 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+**/frontend/src-tauri/resources/jre

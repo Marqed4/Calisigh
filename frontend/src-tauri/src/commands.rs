@@ -1,22 +1,64 @@
-use std::process::{Command, Stdio};
-use std::io::Write;
-
+use tauri::{AppHandle, Manager, WebviewUrl, WebviewWindowBuilder};
+#[allow(dead_code)]
 #[tauri::command]
 pub async fn call_java(json: String) -> Result<String, String> {
-    let mut child = Command::new("java")
-        .arg("-jar")
-        .arg("CustomCalendar.jar")
-        .stdin(Stdio::piped())
-        .stdout(Stdio::piped())
-        .spawn()
-        .map_err(|e| e.to_string())?;
+    let client = reqwest::Client::new();
 
-    if let Some(stdin) = &mut child.stdin {
-        stdin.write_all(json.as_bytes()).unwrap();
+    let response = client
+        .post("http://localhost:8080/api")
+        .header("Content-Type", "application/json")
+        .body(json)
+        .send()
+        .await
+        .map_err(|e| format!("Request failed: {}", e))?;
+
+    let body = response
+        .text()
+        .await
+        .map_err(|e| format!("Failed to read response: {}", e))?;
+
+    Ok(body)
+}
+
+fn open_window(
+    app: &AppHandle,
+    label: &str,
+    title: &str,
+    url: &str,
+    width: f64,
+    height: f64,
+    resizable: bool,
+) {
+    if let Some(w) = app.get_webview_window(label) {
+        let _: tauri::Result<()> = w.set_focus();
+        return;
     }
+    WebviewWindowBuilder::new(app, label, WebviewUrl::App(url.into()))
+        .title(title)
+        .inner_size(width, height)
+        .resizable(resizable)
+        .build()
+        .expect(&format!("Failed to open {}", label));
+}
 
-    let output = child.wait_with_output().unwrap();
-    let response = String::from_utf8(output.stdout).unwrap();
+#[tauri::command]
+pub fn open_add_alarm(app: AppHandle, date: String) {
+    let url = format!("/add-alarm?date={}", date);
+    open_window(&app, "add-alarm", "Add Alarm", &url, 420.0, 420.0, false);
+}
 
-    Ok(response)
+#[tauri::command]
+pub fn open_view_edit_alarm(app: AppHandle, alarm_id: String) {
+    let url = format!("/view-edit-alarm?id={}", alarm_id);
+    open_window(&app, "view-edit-alarm", "Edit Alarm", &url, 420.0, 420.0, false);
+}
+
+#[tauri::command]
+pub fn open_settings(app: AppHandle) {
+    open_window(&app, "view-settings", "Settings", "/view-settings", 420.0, 420.0, false);
+}
+
+#[tauri::command]
+pub fn open_chat_assistant(app: AppHandle) {
+    open_window(&app, "view-chat-assistant", "Chat", "/view-chat-assistant", 420.0, 420.0, true);
 }

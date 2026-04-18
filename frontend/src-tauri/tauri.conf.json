@@ -23,43 +23,7 @@
         "resizable": true,
         "fullscreen": false,
         "maximizable": false
-      },
-      {
-      "label": "add-alarm",
-      "title": "Add Alarm",
-      "width": 420,
-      "height": 420,
-      "resizable": false,
-      "visible": false,
-      "url": "/add-alarm"
-    },
-    {
-      "label": "view-edit-alarm",
-      "title": "Edit Alarm",
-      "width": 420,
-      "height": 420,
-      "resizable": false,
-      "visible": false,
-      "url": "/view-edit-alarm"
-    },
-    {
-      "label": "view-settings",
-      "title": "Settings",
-      "width": 420,
-      "height": 420,
-      "resizable": false,
-      "visible": false,
-      "url": "/view-settings"
-    },
-    {
-      "label": "view-chat-assistant",
-      "title": "Chat",
-      "width": 420,
-      "height": 420,
-      "resizable": true,
-      "visible": false,
-      "url": "/view-chat-assistant"
-    }
+      }
     ],
     "security": {
       "csp": null
@@ -68,7 +32,10 @@
   "bundle": {
     "active": true,
     "targets": "all",
-    "resources": { "../../backend/target/CustomCalendar.jar": "CustomCalendar.jar" },
+    "resources": {
+      "../../backend/target/CustomCalendar.jar": "CustomCalendar.jar",
+      "resources/temurin-21-jre.msi": "temurin-21-jre.msi"
+    },
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
