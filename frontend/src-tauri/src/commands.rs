@@ -27,15 +27,19 @@ fn open_window(
     url: &str,
     width: f64,
     height: f64,
+    fullscreen: bool,
     resizable: bool,
 ) {
     if let Some(w) = app.get_webview_window(label) {
         let _: tauri::Result<()> = w.set_focus();
         return;
     }
+
     WebviewWindowBuilder::new(app, label, WebviewUrl::App(url.into()))
         .title(title)
         .inner_size(width, height)
+        .fullscreen(fullscreen)
+        .max_inner_size(950.0, 650.0)
         .resizable(resizable)
         .build()
         .expect(&format!("Failed to open {}", label));
@@ -44,21 +48,21 @@ fn open_window(
 #[tauri::command]
 pub fn open_add_alarm(app: AppHandle, date: String) {
     let url = format!("/add-alarm?date={}", date);
-    open_window(&app, "add-alarm", "Add Alarm", &url, 420.0, 420.0, false);
+    open_window(&app, "add-alarm", "Add Alarm", &url, 420.0, 420.0, false, true);
 }
 
 #[tauri::command]
 pub fn open_view_edit_alarm(app: AppHandle, alarm_id: String) {
     let url = format!("/view-edit-alarm?id={}", alarm_id);
-    open_window(&app, "view-edit-alarm", "Edit Alarm", &url, 420.0, 420.0, false);
+    open_window(&app, "view-edit-alarm", "Edit Alarm", &url, 420.0, 420.0, false, true);
 }
 
 #[tauri::command]
 pub fn open_settings(app: AppHandle) {
-    open_window(&app, "view-settings", "Settings", "/view-settings", 420.0, 420.0, false);
+    open_window(&app, "view-settings", "Settings", "/view-settings", 420.0, 420.0, false, true);
 }
 
 #[tauri::command]
 pub fn open_chat_assistant(app: AppHandle) {
-    open_window(&app, "view-chat-assistant", "Chat", "/view-chat-assistant", 420.0, 420.0, true);
+    open_window(&app, "view-chat-assistant", "Chat", "/view-chat-assistant", 420.0, 420.0, false, true);
 }
