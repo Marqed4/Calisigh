@@ -315,6 +315,8 @@ fn main() {
                 if is_autostart {
                     let _ = win.set_skip_taskbar(true);
                     let _ = win.hide();
+                    // Cooldown
+                    std::thread::sleep(std::time::Duration::from_millis(500));
                 } else {
                     let _ = win.set_skip_taskbar(false);
                     let _ = win.show();
@@ -331,16 +333,6 @@ fn main() {
                         api.prevent_close();
                         let _ = window.set_skip_taskbar(true);
                         let _ = window.hide();
-                    }
-                }
-                tauri::WindowEvent::Resized(_) => {
-                    if window.label() == "main" {
-                        if let Some(win) = window.get_webview_window("main") {
-                            if win.is_minimized().unwrap_or(false) {
-                                let _ = win.set_skip_taskbar(true);
-                                let _ = win.hide();
-                            }
-                        }
                     }
                 }
                 tauri::WindowEvent::Destroyed => {
