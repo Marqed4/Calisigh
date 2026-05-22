@@ -3,14 +3,7 @@ import { listen } from "@tauri-apps/api/event";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
 import Settings from "../resources/assets/images/Signs/Settings.gif?url";
-import FallBackground from "../resources/assets/images/Backgrounds/Fall Forest.gif";
-import WinterBackground from "../resources/assets/images/Backgrounds/Winter Forest.gif";
-import SpringBackground from "../resources/assets/images/Backgrounds/Spring Forest.gif";
-import SummerBackground from "../resources/assets/images/Backgrounds/Summer Forest.gif";
-import SilosBackground from "../resources/assets/images/Backgrounds/Silos.gif";
-import LakeSideBackground from "../resources/assets/images/Backgrounds/Lake Side.gif";
-import PeaceBackground from "../resources/assets/images/Backgrounds/Peace.gif";
-import BarnBackground from "../resources/assets/images/Backgrounds/Barn.gif";
+import { DefaultBackgrounds } from "../resources/assets/images/Backgrounds/index.js";
 import MonthYearDisplay from "./MonthYearDisplay.jsx";
 import ViewYears from "./ViewYears.jsx";
 import CalendarGrid from "./CalendarGrid.jsx";
@@ -19,17 +12,19 @@ import "./MonthYearDisplay.css";
 import ".//ViewYears.css"
 import "./Home.css";
 
+/* Map localStorage keys to background images */
 const BG_MAP = {
-  fall: FallBackground,
-  winter: WinterBackground,
-  spring: SpringBackground,
-  summer: SummerBackground,
-  silos: SilosBackground,
-  lakeside: LakeSideBackground,
-  peace: PeaceBackground,
-  barn: BarnBackground,
+  barn: DefaultBackgrounds.Barn,
+  lakeside: DefaultBackgrounds.Lake,
+  peace: DefaultBackgrounds.Peace,
+  silos: DefaultBackgrounds.Silo,
+  summer: DefaultBackgrounds.Summer,
+  tree: DefaultBackgrounds.Tree,
+  fall: DefaultBackgrounds.Fall,
+  winter: DefaultBackgrounds.Winter,
 };
 
+/* Load saved background, fall back to custom paths, then default to fall */
 function getBackground() {
   const saved = localStorage.getItem("calisigh-bg") ?? "fall";
   if (BG_MAP[saved]) return BG_MAP[saved];
@@ -38,10 +33,12 @@ function getBackground() {
   return entry ? convertFileSrc(entry.split("|&")[1]) : BG_MAP["fall"];
 }
 
+/* Read a boolean toggle from localStorage, defaults to true if not set */
 function readToggle(key) {
   return localStorage.getItem(key) !== "false";
 }
 
+/* Open a named webview window, or focus it if already open */
 async function openWindow(label, url, options = {}) {
   console.log("openWindow called", label);
   try {
@@ -65,6 +62,11 @@ async function openWindow(label, url, options = {}) {
   }
 }
 
+/*
+  Poll until the Java backend is ready,
+  if it never comes up reload the window so it retries on next show.
+  See is_autostart in main.rs
+*/
 async function waitForBackend(retries = 20, delayMs = 500) {
   for (let i = 0; i < retries; i++) {
     try {
@@ -73,7 +75,7 @@ async function waitForBackend(retries = 20, delayMs = 500) {
     } catch (_) {}
     await new Promise(r => setTimeout(r, delayMs));
   }
-  console.error("Backend never became ready after retries");
+  window.location.reload();
   return false;
 }
 
@@ -93,6 +95,7 @@ export default function Home() {
 
   const [bg, setBg] = useState(getBackground());
 
+  /* Refresh background and holiday toggles whenever the window regains focus */
   useEffect(() => {
     const onFocus = () => {
       setBg(getBackground());
@@ -104,6 +107,7 @@ export default function Home() {
     return () => window.removeEventListener("focus", onFocus);
   }, []);
 
+  /* On mount, wait for backend then load alarms and start the firing poller */
   useEffect(() => {
     waitForBackend().then(ready => {
       if (ready) {
@@ -120,6 +124,7 @@ export default function Home() {
     };
   }, []);
 
+  /* Reload holidays when the year or any toggle changes */
   useEffect(() => {
     loadHolidays(currentDate.getFullYear());
   }, [currentDate.getFullYear(), showFederal, showObservance, showReligious]);
@@ -158,6 +163,7 @@ export default function Home() {
     }
   }
 
+  /* Check every second if an alarm is firing, open the alert window if so */
   function startAlarmFiringPoller() {
     setInterval(async () => {
       try {
@@ -185,6 +191,7 @@ export default function Home() {
               alwaysOnTop: true,
               skipTaskbar: false,
             });
+            /* Reset the flag once the alarm window is closed */
             win.once("tauri://destroyed", () => {
               alarmWindowOpen.current = false;
             });
@@ -197,6 +204,7 @@ export default function Home() {
     }, 1000);
   }
 
+  /* Fit the calendar grid to the available space below the nav */
   function updateSize() {
     if (Main.current) {
       const { width, height } = Main.current.getBoundingClientRect();
@@ -223,6 +231,7 @@ export default function Home() {
     await openWindow("add-alarm", `/add-alarm?day=${date.getDate()}&month=${currentDate.getMonth() + 1}&year=${currentDate.getFullYear()}`);
   }
 
+  /* Pass all alarm fields as query params so the edit window can pre-fill */
   async function openEditWindow(alarm) {
     const dt = new Date(alarm.time);
     const query = new URLSearchParams({
@@ -250,6 +259,7 @@ export default function Home() {
     const month = date.getMonth();
     const startDay = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
+    /* Pad the front with nulls so the first day lands on the right weekday */
     const days = [];
     for (let i = 0; i < startDay; i++) days.push(null);
     for (let d = 1; d <= daysInMonth; d++) days.push(new Date(year, month, d));

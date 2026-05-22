@@ -318,12 +318,13 @@ fn main() {
 
             let is_autostart = std::env::args().any(|a| a == "--autostart");
             if let Some(win) = app.get_webview_window("main") {
+                // Race condition fix?
                 if is_autostart {
                     let _ = win.set_skip_taskbar(true);
                     let _ = win.hide();
                     // Longer cooldown on cold boot to let the webview fully register
                     // before any tray click events can arrive
-                    std::thread::sleep(std::time::Duration::from_millis(1500));
+                    std::thread::sleep(std::time::Duration::from_millis(3000));
                 } else {
                     let _ = win.set_skip_taskbar(false);
                     let _ = win.show();

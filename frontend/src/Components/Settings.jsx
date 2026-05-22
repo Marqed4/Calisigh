@@ -2,16 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { open } from "@tauri-apps/plugin-dialog";
 import { convertFileSrc } from "@tauri-apps/api/core";
-
-import FallBackground from "../resources/assets/images/Backgrounds/Fall Forest.gif";
-import WinterBackground from "../resources/assets/images/Backgrounds/Winter Forest.gif";
-import SpringBackground from "../resources/assets/images/Backgrounds/Spring Forest.gif";
-import SummerBackground from "../resources/assets/images/Backgrounds/Summer Forest.gif";
-import SilosBackground from "../resources/assets/images/Backgrounds/Silos.gif";
-import LakeSideBackground from "../resources/assets/images/Backgrounds/Lake Side.gif";
-import PeaceBackground from "../resources/assets/images/Backgrounds/Peace.gif";
-import BarnBackground from "../resources/assets/images/Backgrounds/Barn.gif";
-
+import { DefaultBackgrounds } from "../resources/assets/images/Backgrounds/index.js";
 import SaveInactive from "../resources/assets/images/Settings/Save Inactive.gif";
 import SaveActive from "../resources/assets/images/Settings/Save Active.gif";
 import CancelInactive from "../resources/assets/images/Settings/Cancel Inactive.gif";
@@ -23,14 +14,14 @@ import VolumeIcon from "../resources/assets/images/Signs/Volume.gif";
 import "./Settings.css";
 
 const BG_MAP = [
-  { label: "Fall",      value: "fall",     src: FallBackground },
-  { label: "Winter",    value: "winter",   src: WinterBackground },
-  { label: "Spring",    value: "spring",   src: SpringBackground },
-  { label: "Summer",    value: "summer",   src: SummerBackground },
-  { label: "Silos",     value: "silos",    src: SilosBackground },
-  { label: "Lake Side", value: "lakeside", src: LakeSideBackground },
-  { label: "Peace",     value: "peace",    src: PeaceBackground },
-  { label: "Barn",      value: "barn",     src: BarnBackground },
+  { label: "Barn",     value: "barn",     src: DefaultBackgrounds.Barn },
+  { label: "Lake",     value: "lakeside", src: DefaultBackgrounds.Lake },
+  { label: "Peace",    value: "peace",    src: DefaultBackgrounds.Peace },
+  { label: "Silos",    value: "silos",    src: DefaultBackgrounds.Silo },
+  { label: "Summer",   value: "summer",   src: DefaultBackgrounds.Summer },
+  { label: "Tree",     value: "tree",     src: DefaultBackgrounds.Tree },
+  { label: "Fall",     value: "fall",     src: DefaultBackgrounds.Fall },
+  { label: "Winter",   value: "winter",   src: DefaultBackgrounds.Winter },
 ];
 
 function HoverGif({ inactive, active, onClick, title, className }) {

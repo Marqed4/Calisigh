@@ -76,6 +76,7 @@ import Remove from "../resources/assets/images/Signs/Red Remove.gif";
 
 import "./CalendarGrid.css";
 
+// GIF arrays indexed by day number, inverted version is used for today
 const DAY_GIFS = [sun, mon, tue, wed, thu, fri, sat];
 const DAY_NAMES = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 const DAY_NUMBERS = [n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15,n16,n17,n18,n19,n20,n21,n22,n23,n24,n25,n26,n27,n28,n29,n30,n31];
@@ -105,6 +106,7 @@ export default function CalendarGrid({ calendarDays, currentDate, alarms, onDayC
   return (
     <div className="calendar-grid" style={{ width: gridSize, height: gridSize }}>
 
+      {/* Row of day header GIFs — Sun through Sat */}
       {DAY_GIFS.map((gif, i) => (
         <div key={i} className="day">
           <img src={gif} alt={DAY_NAMES[i]} className="day-gif" />
@@ -124,6 +126,7 @@ export default function CalendarGrid({ calendarDays, currentDate, alarms, onDayC
             {date && (
               <>
                 <div className="day-cell-header">
+                  {/* Inverted number GIF highlights today's date */}
                   <img
                     src={isToday ? DAY_NUMBERS_INVERTED[date.getDate()] : DAY_NUMBERS[date.getDate()]}
                     alt={date.getDate()}
@@ -133,6 +136,7 @@ export default function CalendarGrid({ calendarDays, currentDate, alarms, onDayC
                     <span className="holiday-label">{holiday.shortName}</span>
                   )}
                 </div>
+                {/* Filter alarms down to just the ones that belong to this day */}
                 {alarms
                   .filter(a => a.time?.startsWith(date.toISOString().split("T")[0]))
                   .map((alarm, idx) => (

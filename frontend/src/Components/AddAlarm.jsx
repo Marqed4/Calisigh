@@ -1,28 +1,22 @@
 import { useState } from "react";
 import { emit } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import FallBackground from "../resources/assets/images/Backgrounds/Fall Forest.gif";
-import WinterBackground from "../resources/assets/images/Backgrounds/Winter Forest.gif";
-import SpringBackground from "../resources/assets/images/Backgrounds/Spring Forest.gif";
-import SummerBackground from "../resources/assets/images/Backgrounds/Summer Forest.gif";
-import SilosBackground from "../resources/assets/images/Backgrounds/Silos.gif";
-import LakeSideBackground from "../resources/assets/images/Backgrounds/Lake Side.gif";
-import PeaceBackground from "../resources/assets/images/Backgrounds/Peace.gif";
-import BarnBackground from "../resources/assets/images/Backgrounds/Barn.gif";
-import "./AddAlarm.css";
+import { DefaultBackgrounds } from "../resources/assets/images/Backgrounds/index.js";
 
+// Same BG_MAP as Home.jsx, keys match what's saved in localStorage
 const BG_MAP = {
-  fall: FallBackground,
-  winter: WinterBackground,
-  spring: SpringBackground,
-  summer: SummerBackground,
-  silos: SilosBackground,
-  lakeside: LakeSideBackground,
-  peace: PeaceBackground,
-  barn: BarnBackground,
+  barn: DefaultBackgrounds.Barn,
+  lakeside: DefaultBackgrounds.Lake,
+  peace: DefaultBackgrounds.Peace,
+  silos: DefaultBackgrounds.Silo,
+  summer: DefaultBackgrounds.Summer,
+  tree: DefaultBackgrounds.Tree,
+  fall: DefaultBackgrounds.Fall,
+  winter: DefaultBackgrounds.Winter,
 };
 
 export default function AddAlarm() {
+  // Pull the date from the query params passed when the window was opened
   const params = new URLSearchParams(window.location.search);
   const day = params.get("day");
   const month = params.get("month");
@@ -33,6 +27,7 @@ export default function AddAlarm() {
   const [time, setTime] = useState("");
   const [error, setError] = useState("");
 
+  // Match the background to whatever the user has set in settings
   const bg = BG_MAP[localStorage.getItem("calisigh-bg") ?? "fall"];
 
   async function saveAlarm() {
@@ -40,13 +35,17 @@ export default function AddAlarm() {
       setError("Title and time are required.");
       return;
     }
+
+    // Build the ISO timestamp from the date params and the time input
     const iso = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}T${time}:00`;
+
     try {
       await fetch("http://localhost:4567/api/alarms", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ time: iso, title, desc }),
       });
+      // Tell Home.jsx to reload its alarms, then close this window
       await emit("alarm-saved");
       await getCurrentWindow().close();
     } catch (err) {
