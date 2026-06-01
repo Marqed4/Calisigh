@@ -1,50 +1,12 @@
 import { openUrl } from '@tauri-apps/plugin-opener';
 import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
-
+import { useFontTheme } from "./FontPackage.jsx";
 import "./Sidebar.css";
 
-import { GraffitiMonths } from "../resources/assets/images/Graffiti_Months/index.js";
-import { GraffitiNumbers } from "../resources/assets/images/Graffiti_Numbers/index.js";
-import { GraffitiLetters } from "../resources/assets/images/Graffiti_Letters/index.js";
-
-import FAQ from "../resources/assets/images/Signs/FAQ.gif";
+import FAQ  from "../resources/assets/images/Signs/FAQ.gif";
 import Chat from "../resources/assets/images/Signs/Chat.gif";
 
-const MONTHS = [
-  GraffitiMonths.January, GraffitiMonths.February, GraffitiMonths.March,
-  GraffitiMonths.April, GraffitiMonths.May, GraffitiMonths.June,
-  GraffitiMonths.July, GraffitiMonths.August, GraffitiMonths.September,
-  GraffitiMonths.October, GraffitiMonths.November, GraffitiMonths.December,
-];
-
-const YEAR_DIGITS = [
-  GraffitiNumbers.Date0, GraffitiNumbers.Date1, GraffitiNumbers.Date2,
-  GraffitiNumbers.Date3, GraffitiNumbers.Date4, GraffitiNumbers.Date5,
-  GraffitiNumbers.Date6, GraffitiNumbers.Date7, GraffitiNumbers.Date8,
-  GraffitiNumbers.Date9,
-];
-
-const DAY_GIFS = [
-  null,
-  GraffitiNumbers.Date1,  GraffitiNumbers.Date2,  GraffitiNumbers.Date3,
-  GraffitiNumbers.Date4,  GraffitiNumbers.Date5,  GraffitiNumbers.Date6,
-  GraffitiNumbers.Date7,  GraffitiNumbers.Date8,  GraffitiNumbers.Date9,
-  GraffitiNumbers.Date10, GraffitiNumbers.Date11, GraffitiNumbers.Date12,
-  GraffitiNumbers.Date13, GraffitiNumbers.Date14, GraffitiNumbers.Date15,
-  GraffitiNumbers.Date16, GraffitiNumbers.Date17, GraffitiNumbers.Date18,
-  GraffitiNumbers.Date19, GraffitiNumbers.Date20, GraffitiNumbers.Date21,
-  GraffitiNumbers.Date22, GraffitiNumbers.Date23, GraffitiNumbers.Date24,
-  GraffitiNumbers.Date25, GraffitiNumbers.Date26, GraffitiNumbers.Date27,
-  GraffitiNumbers.Date28, GraffitiNumbers.Date29, GraffitiNumbers.Date30,
-  GraffitiNumbers.Date31,
-];
-
-const DAYS_INIT = [
-  GraffitiLetters.S, GraffitiLetters.M, GraffitiLetters.T, 
-  GraffitiLetters.W, GraffitiLetters.T, GraffitiLetters.F, 
-  GraffitiLetters.S
-]
-
+/* Opens the chat assistant window, or focuses it if already open */
 async function openChatWindow() {
   try {
     const existing = await WebviewWindow.getByLabel("view-chat-assistant");
@@ -69,6 +31,50 @@ async function openChatWindow() {
 }
 
 export default function Sidebar({ currentDate, calendarDays }) {
+
+  /* Pull active font assets from context */
+  const { fontTheme }   = useFontTheme();
+  const GraffitiMonths  = fontTheme.Months;
+  const GraffitiNumbers = fontTheme.Numbers;
+  const GraffitiLetters = fontTheme.Letters;
+
+  /* Built inside the function so they reflect the current font theme */
+  const MONTHS = [
+    GraffitiMonths.January,   GraffitiMonths.February, GraffitiMonths.March,
+    GraffitiMonths.April,     GraffitiMonths.May,      GraffitiMonths.June,
+    GraffitiMonths.July,      GraffitiMonths.August,   GraffitiMonths.September,
+    GraffitiMonths.October,   GraffitiMonths.November, GraffitiMonths.December,
+  ];
+
+  const YEAR_DIGITS = [
+    GraffitiNumbers.Date0, GraffitiNumbers.Date1, GraffitiNumbers.Date2,
+    GraffitiNumbers.Date3, GraffitiNumbers.Date4, GraffitiNumbers.Date5,
+    GraffitiNumbers.Date6, GraffitiNumbers.Date7, GraffitiNumbers.Date8,
+    GraffitiNumbers.Date9,
+  ];
+
+  const DAY_GIFS = [
+    null,
+    GraffitiNumbers.Date1,  GraffitiNumbers.Date2,  GraffitiNumbers.Date3,
+    GraffitiNumbers.Date4,  GraffitiNumbers.Date5,  GraffitiNumbers.Date6,
+    GraffitiNumbers.Date7,  GraffitiNumbers.Date8,  GraffitiNumbers.Date9,
+    GraffitiNumbers.Date10, GraffitiNumbers.Date11, GraffitiNumbers.Date12,
+    GraffitiNumbers.Date13, GraffitiNumbers.Date14, GraffitiNumbers.Date15,
+    GraffitiNumbers.Date16, GraffitiNumbers.Date17, GraffitiNumbers.Date18,
+    GraffitiNumbers.Date19, GraffitiNumbers.Date20, GraffitiNumbers.Date21,
+    GraffitiNumbers.Date22, GraffitiNumbers.Date23, GraffitiNumbers.Date24,
+    GraffitiNumbers.Date25, GraffitiNumbers.Date26, GraffitiNumbers.Date27,
+    GraffitiNumbers.Date28, GraffitiNumbers.Date29, GraffitiNumbers.Date30,
+    GraffitiNumbers.Date31,
+  ];
+
+  /* Single-letter day headers for the mini calendar grid */
+  const DAYS_INIT = [
+    GraffitiLetters.S, GraffitiLetters.M, GraffitiLetters.T,
+    GraffitiLetters.W, GraffitiLetters.T, GraffitiLetters.F,
+    GraffitiLetters.S,
+  ];
+
   const monthGif = MONTHS[currentDate.getMonth()];
 
   return (
@@ -116,6 +122,7 @@ export default function Sidebar({ currentDate, calendarDays }) {
         })}
       </div>
 
+      {/* Opens the FAQ/about page in the user's browser */}
       <a
         className="faq-link"
         title="About/FAQ"
@@ -128,9 +135,10 @@ export default function Sidebar({ currentDate, calendarDays }) {
         <img src={FAQ} className="faq-header" alt="FAQ" />
       </a>
 
+      {/* Opens the Calisigh Bud chat assistant window */}
       <a
         className="chat-link"
-        title="Calisgh Bud/Chat Assistant"
+        title="Calisigh Bud/Chat Assistant"
         onClick={(e) => {
           e.preventDefault();
           openChatWindow();

@@ -3,6 +3,7 @@ import { listen } from "@tauri-apps/api/event";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
 import Settings from "../resources/assets/images/Signs/Settings.gif";
+import { useFontTheme } from "./FontPackage.jsx";
 import { DefaultBackgrounds } from "../resources/assets/images/Backgrounds/index.js";
 import MonthYearDisplay from "./MonthYearDisplay.jsx";
 import ViewYears from "./ViewYears.jsx";
@@ -80,6 +81,7 @@ async function waitForBackend(retries = 20, delayMs = 500) {
 }
 
 export default function Home() {
+  const { setFontTheme } = useFontTheme();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [alarms, setAlarms] = useState([]);
   const [holidays, setHolidays] = useState({});
@@ -102,6 +104,7 @@ export default function Home() {
       setShowFederal(readToggle("calisigh-holidays-federal"));
       setShowObservance(readToggle("calisigh-holidays-observance"));
       setShowReligious(readToggle("calisigh-holidays-religious"));
+      setFontTheme(localStorage.getItem("calisigh-font") ?? "graffiti");
     };
     window.addEventListener("focus", onFocus);
     return () => window.removeEventListener("focus", onFocus);

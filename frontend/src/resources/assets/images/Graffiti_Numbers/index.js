@@ -63,6 +63,8 @@ import Date30 from './30.gif'
 import Inverted31 from './31 Inverted.gif'
 import Date31 from './31.gif'
 
+import Years from '../Graffiti_Years/Years.gif'
+
 export const GraffitiNumbers = {
   Inverted0: Inverted0,
   Date0: Date0,
@@ -128,4 +130,5 @@ export const GraffitiNumbers = {
   Date30: Date30,
   Inverted31: Inverted31,
   Date31: Date31,
+  Years: Years,
 }

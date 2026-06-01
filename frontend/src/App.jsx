@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { FontProvider } from "./Components/FontPackage.jsx";
 import Home from "./Components/Home.jsx";
-
 import AlarmFiring from "./Components/AlarmFiring.jsx";
 import AddAlarm from "./Components/AddAlarm.jsx";
 import Settings from "./Components/Settings.jsx";
-import ViewYears from "./Components/ViewYears.jsx"
+import ViewYears from "./Components/ViewYears.jsx";
 import ViewChatAssistant from "./Components/Chat.jsx";
 import ViewEditAlarm from "./Components/ViewEditAlarm.jsx";
 import "./App.css";
@@ -20,22 +20,23 @@ export default function App() {
           await win.setFullscreen(false);
         }
       }).then(f => { unlisten = f; });
-
       return () => { if (unlisten) unlisten(); };
     });
   }, []);
 
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/add-alarm" element={<AddAlarm />} />
-        <Route path="/view-year" element={<ViewYears />} />
-        <Route path="/view-settings" element={<Settings />} />
-        <Route path="/alarm-firing" element={<AlarmFiring />} />
-        <Route path="/view-edit-alarm" element={<ViewEditAlarm />} />
-        <Route path="/view-chat-assistant" element={<ViewChatAssistant/>} />
-      </Routes>
-    </Router>
+    <FontProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/add-alarm" element={<AddAlarm />} />
+          <Route path="/view-year" element={<ViewYears />} />
+          <Route path="/view-settings" element={<Settings />} />
+          <Route path="/alarm-firing" element={<AlarmFiring />} />
+          <Route path="/view-edit-alarm" element={<ViewEditAlarm />} />
+          <Route path="/view-chat-assistant" element={<ViewChatAssistant />} />
+        </Routes>
+      </Router>
+    </FontProvider>
   );
 }

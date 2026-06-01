@@ -4,22 +4,10 @@ import { open } from "@tauri-apps/plugin-dialog";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { DefaultBackgrounds } from "../resources/assets/images/Backgrounds/index.js";
 import { GraffitiSettings } from "../resources/assets/images/Graffiti_Settings/index.js";
+import { FONT_THEMES, useFontTheme } from "./FontPackage.jsx";
 import RemoveIcon from "../resources/assets/images/Signs/Red Remove.gif"
 import VolumeIcon from "../resources/assets/images/Signs/Volume.gif";
 import "./Settings.css";
-
-const SETTINGS = {
-  CancelActive:   GraffitiSettings.CancelActive,
-  CancelInactive: GraffitiSettings.CancelInactive,
-  RemoveActive:   GraffitiSettings.RemoveActive,
-  RemoveInactive: GraffitiSettings.RemoveInactive,
-  SaveActive:     GraffitiSettings.SaveActive,
-  SaveInactive:   GraffitiSettings.SaveInactive,
-  UpdateActive:   GraffitiSettings.UpdateActive,
-  UpdateInactive: GraffitiSettings.UpdateInactive,
-  UploadActive:   GraffitiSettings.UploadActive,
-  UploadInactive: GraffitiSettings.UploadInactive,
-};
 
 const BG_MAP = [
   { label: "Barn",   value: "barn",     src: DefaultBackgrounds.Barn },
@@ -48,6 +36,22 @@ function HoverGif({ inactive, active, onClick, title, className }) {
 }
 
 export default function Settings() {
+
+  const { fontKey, setFontTheme, fontTheme } = useFontTheme();
+
+  const SETTINGS = {
+    CancelActive:   fontTheme.Settings.CancelActive,
+    CancelInactive: fontTheme.Settings.CancelInactive,
+    RemoveActive:   fontTheme.Settings.RemoveActive,
+    RemoveInactive: fontTheme.Settings.RemoveInactive,
+    SaveActive:     fontTheme.Settings.SaveActive,
+    SaveInactive:   fontTheme.Settings.SaveInactive,
+    UpdateActive:   fontTheme.Settings.UpdateActive,
+    UpdateInactive: fontTheme.Settings.UpdateInactive,
+    UploadActive:   fontTheme.Settings.UploadActive,
+    UploadInactive: fontTheme.Settings.UploadInactive,
+  };
+
   const [selectedBg, setSelectedBg] = useState(
     localStorage.getItem("calisigh-bg") ?? "fall"
   );
@@ -228,6 +232,7 @@ export default function Settings() {
   }
 
   async function save() {
+    localStorage.setItem("calisigh-font", fontKey);
     localStorage.setItem("calisigh-bg", selectedBg);
     localStorage.setItem("calisigh-custom-bgs", JSON.stringify(customBackgrounds));
     localStorage.setItem("calisigh-holidays-federal",    String(showFederal));
@@ -295,6 +300,19 @@ export default function Settings() {
               >
                 {showReligious ? "On" : "Off"}
               </button>
+            </div>
+
+            <div className="settings-toggle-row">
+              <span className="settings-toggle-label">Font Style</span>
+              <select
+                className="settings-font-select"
+                value={fontKey}
+                onChange={e => setFontTheme(e.target.value)}
+              >
+                {Object.entries(FONT_THEMES).map(([key, theme]) => (
+                  <option key={key} value={key}>{theme.label}</option>
+                ))}
+              </select>
             </div>
 
             <div className="settings-bg-picker">

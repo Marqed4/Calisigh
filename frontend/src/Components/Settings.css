@@ -431,3 +431,13 @@ body {
 .settings-toggle-btn--on:hover {
   background: rgba(255, 210, 80, 0.32);
 }
+
+.settings-font-select {
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
