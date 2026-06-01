@@ -3,25 +3,33 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { open } from "@tauri-apps/plugin-dialog";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { DefaultBackgrounds } from "../resources/assets/images/Backgrounds/index.js";
-import SaveInactive from "../resources/assets/images/Settings/Save Inactive.gif";
-import SaveActive from "../resources/assets/images/Settings/Save Active.gif";
-import CancelInactive from "../resources/assets/images/Settings/Cancel Inactive.gif";
-import CancelActive from "../resources/assets/images/Settings/Cancel Active.gif";
-import UploadInactive from "../resources/assets/images/Settings/Upload Inactive.gif";
-import UploadActive from "../resources/assets/images/Settings/Upload Active.gif";
-import Remove from "../resources/assets/images/Signs/Red Remove.gif";
+import { GraffitiSettings } from "../resources/assets/images/Graffiti_Settings/index.js";
+import RemoveIcon from "../resources/assets/images/Signs/Red Remove.gif"
 import VolumeIcon from "../resources/assets/images/Signs/Volume.gif";
 import "./Settings.css";
 
+const SETTINGS = {
+  CancelActive:   GraffitiSettings.CancelActive,
+  CancelInactive: GraffitiSettings.CancelInactive,
+  RemoveActive:   GraffitiSettings.RemoveActive,
+  RemoveInactive: GraffitiSettings.RemoveInactive,
+  SaveActive:     GraffitiSettings.SaveActive,
+  SaveInactive:   GraffitiSettings.SaveInactive,
+  UpdateActive:   GraffitiSettings.UpdateActive,
+  UpdateInactive: GraffitiSettings.UpdateInactive,
+  UploadActive:   GraffitiSettings.UploadActive,
+  UploadInactive: GraffitiSettings.UploadInactive,
+};
+
 const BG_MAP = [
-  { label: "Barn",     value: "barn",     src: DefaultBackgrounds.Barn },
-  { label: "Lake",     value: "lakeside", src: DefaultBackgrounds.Lake },
-  { label: "Peace",    value: "peace",    src: DefaultBackgrounds.Peace },
-  { label: "Silos",    value: "silos",    src: DefaultBackgrounds.Silo },
-  { label: "Summer",   value: "summer",   src: DefaultBackgrounds.Summer },
-  { label: "Tree",     value: "tree",     src: DefaultBackgrounds.Tree },
-  { label: "Fall",     value: "fall",     src: DefaultBackgrounds.Fall },
-  { label: "Winter",   value: "winter",   src: DefaultBackgrounds.Winter },
+  { label: "Barn",   value: "barn",     src: DefaultBackgrounds.Barn },
+  { label: "Lake",   value: "lakeside", src: DefaultBackgrounds.Lake },
+  { label: "Peace",  value: "peace",    src: DefaultBackgrounds.Peace },
+  { label: "Silos",  value: "silos",    src: DefaultBackgrounds.Silo },
+  { label: "Summer", value: "summer",   src: DefaultBackgrounds.Summer },
+  { label: "Tree",   value: "tree",     src: DefaultBackgrounds.Tree },
+  { label: "Fall",   value: "fall",     src: DefaultBackgrounds.Fall },
+  { label: "Winter", value: "winter",   src: DefaultBackgrounds.Winter },
 ];
 
 function HoverGif({ inactive, active, onClick, title, className }) {
@@ -115,10 +123,9 @@ export default function Settings() {
   }
 
   async function handleVolumeChange(e) {
-  const val = Number(e.target.value);
-  setVolume(val);
-
-  clearTimeout(volumeDebounceRef.current);
+    const val = Number(e.target.value);
+    setVolume(val);
+    clearTimeout(volumeDebounceRef.current);
     volumeDebounceRef.current = setTimeout(async () => {
       try {
         await fetch("http://localhost:4567/api/sounds/volume", {
@@ -314,7 +321,7 @@ export default function Settings() {
                     <img src={convertFileSrc(path)} alt={name} className="settings-bg-img" />
                     <span className="settings-bg-label">{name}</span>
                     <img
-                      src={Remove}
+                      src={SETTINGS.RemoveInactive}
                       alt="Remove"
                       className="settings-bg-remove"
                       onClick={(e) => { e.stopPropagation(); removeBackground(entry); }}
@@ -327,13 +334,19 @@ export default function Settings() {
 
           <div className="settings-actions">
             <div className="settings-action-btn" onClick={uploadBackground}>
-              <HoverGif inactive={UploadInactive} active={UploadActive} title="Upload Background" className="settings-upload-backgrounds-gif" />
+              <HoverGif inactive={SETTINGS.UploadInactive} 
+              active={SETTINGS.UploadActive} title="Upload Background" 
+              className="settings-upload-backgrounds-gif" />
             </div>
             <div className="settings-action-btn" onClick={save}>
-              <HoverGif inactive={SaveInactive} active={SaveActive} title="Save" className="settings-save-gif" />
+              <HoverGif inactive={SETTINGS.SaveInactive} 
+              active={SETTINGS.SaveActive} title="Save" 
+              className="settings-save-gif" />
             </div>
             <div className="settings-action-btn" onClick={handleCancel}>
-              <HoverGif inactive={CancelInactive} active={CancelActive} title="Cancel" className="settings-cancel-gif" />
+              <HoverGif inactive={SETTINGS.CancelInactive} 
+              active={SETTINGS.CancelActive} title="Cancel" 
+              className="settings-cancel-gif" />
             </div>
           </div>
         </div>
@@ -343,6 +356,7 @@ export default function Settings() {
             <h1 className="sound-subtitle">Alert Sound</h1>
 
             <div className="settings-volume-row">
+              {/* TODO: replace VolumeIcon with the correct asset once you confirm the file */}
               <img className="settings-volume-icon" src={VolumeIcon} alt="Volume" />
               <div className="settings-volume-slider-wrap">
                 <input
@@ -353,7 +367,9 @@ export default function Settings() {
                   value={volume}
                   onChange={handleVolumeChange}
                   style={{
-                    background: `linear-gradient(to right, rgba(255,255,255,0.85) ${volume}%, rgba(255,255,255,0.2) ${volume}%)`
+                    background: `linear-gradient(to right, 
+                    rgba(255,255,255,0.85) ${volume}%, 
+                    rgba(255,255,255,0.2) ${volume}%)`
                   }}
                 />
               </div>
@@ -393,7 +409,7 @@ export default function Settings() {
                   >
                     <span>{name}</span>
                     <img
-                      src={Remove}
+                      src={ RemoveIcon }
                       alt="Remove"
                       className="settings-sound-remove"
                       onClick={(e) => { e.stopPropagation(); removeSound(entry); }}
@@ -405,7 +421,11 @@ export default function Settings() {
           </div>
 
           <div className="settings-sounds-footer">
-            <HoverGif inactive={UploadInactive} active={UploadActive} onClick={uploadSound} title="Add Sound" className="settings-upload-songs-gif" />
+            <div className="settings-action-btn" onClick={uploadSound}>
+              <HoverGif inactive={SETTINGS.UploadInactive} 
+              active={SETTINGS.UploadActive} onClick={uploadSound} 
+              title="Add Sound" className="settings-upload-songs-gif" />
+            </div>
           </div>
         </div>
 

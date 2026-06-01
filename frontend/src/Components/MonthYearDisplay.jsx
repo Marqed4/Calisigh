@@ -1,42 +1,36 @@
-import jan from "../resources/assets/images/Months/January.gif";
-import feb from "../resources/assets/images/Months/February.gif";
-import mar from "../resources/assets/images/Months/March.gif";
-import apr from "../resources/assets/images/Months/April.gif";
-import may from "../resources/assets/images/Months/May.gif";
-import jun from "../resources/assets/images/Months/June.gif";
-import jul from "../resources/assets/images/Months/July.gif";
-import aug from "../resources/assets/images/Months/August.gif";
-import sep from "../resources/assets/images/Months/September.gif";
-import oct from "../resources/assets/images/Months/October.gif";
-import nov from "../resources/assets/images/Months/November.gif";
-import dec from "../resources/assets/images/Months/December.gif";
-
-import n0 from "../resources/assets/images/Numbers/0.gif";
-import n1 from "../resources/assets/images/Numbers/1.gif";
-import n2 from "../resources/assets/images/Numbers/2.gif";
-import n3 from "../resources/assets/images/Numbers/3.gif";
-import n4 from "../resources/assets/images/Numbers/4.gif";
-import n5 from "../resources/assets/images/Numbers/5.gif";
-import n6 from "../resources/assets/images/Numbers/6.gif";
-import n7 from "../resources/assets/images/Numbers/7.gif";
-import n8 from "../resources/assets/images/Numbers/8.gif";
-import n9 from "../resources/assets/images/Numbers/9.gif";
+import { GraffitiMonths } from "../resources/assets/images/Graffiti_Months/index.js";
+import { GraffitiNumbers } from "../resources/assets/images/Graffiti_Numbers/index.js";
 
 import leftarrow from "../resources/assets/images/Signs/Reflective Left Arrow.gif";
 import rightarrow from "../resources/assets/images/Signs/Reflective Right Arrow.gif";
 
-const MONTHS = [jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec];
-const NUMBERS = [n0, n1, n2, n3, n4, n5, n6, n7, n8, n9];
+const MONTHS = [
+  GraffitiMonths.January, GraffitiMonths.February, GraffitiMonths.March,
+  GraffitiMonths.April, GraffitiMonths.May, GraffitiMonths.June,
+  GraffitiMonths.July, GraffitiMonths.August, GraffitiMonths.September,
+  GraffitiMonths.October, GraffitiMonths.November, GraffitiMonths.December,
+];
+
+const NUMBERS = [
+  GraffitiNumbers.Date0, GraffitiNumbers.Date1, GraffitiNumbers.Date2,
+  GraffitiNumbers.Date3, GraffitiNumbers.Date4, GraffitiNumbers.Date5,
+  GraffitiNumbers.Date6, GraffitiNumbers.Date7, GraffitiNumbers.Date8,
+  GraffitiNumbers.Date9,
+];
 
 export default function MonthYearDisplay({ currentDate, onPrev, onNext, viewYears }) {
   return (
     <div className="top-nav">
-      <img src={leftarrow} alt="Previous" className="nav-arrow" onClick={onPrev} />
+      <img src={leftarrow}
+      title="Last Month"
+      alt="Previous"
+      className="nav-arrow"
+      onClick={onPrev} />
 
       <div className="main-month">
         <button onClick={viewYears} className="month-year-btn">
-          <img
-            src={MONTHS[currentDate.getMonth()]}
+          <img src={MONTHS[currentDate.getMonth()]}
+            title="Current Month/Toggle Years"
             alt={currentDate.toLocaleString("default", { month: "long" })}
             className="month-gif"
           />
@@ -53,7 +47,10 @@ export default function MonthYearDisplay({ currentDate, onPrev, onNext, viewYear
         </button>
       </div>
 
-      <img src={rightarrow} alt="Next" className="nav-arrow" onClick={onNext} />
+      <img src={rightarrow}
+      title="Next Month"
+      alt="Next" className="nav-arrow" 
+      onClick={onNext} />
     </div>
   );
 }

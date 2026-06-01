@@ -1,23 +1,19 @@
 import { useState } from "react";
 import "./ViewYears.css";
 
-import n0 from "../resources/assets/images/Numbers/0.gif";
-import n1 from "../resources/assets/images/Numbers/1.gif";
-import n2 from "../resources/assets/images/Numbers/2.gif";
-import n3 from "../resources/assets/images/Numbers/3.gif";
-import n4 from "../resources/assets/images/Numbers/4.gif";
-import n5 from "../resources/assets/images/Numbers/5.gif";
-import n6 from "../resources/assets/images/Numbers/6.gif";
-import n7 from "../resources/assets/images/Numbers/7.gif";
-import n8 from "../resources/assets/images/Numbers/8.gif";
-import n9 from "../resources/assets/images/Numbers/9.gif";
+import { GraffitiNumbers } from "../resources/assets/images/Graffiti_Numbers/index.js";
+
+const YEAR_DIGITS = [
+  GraffitiNumbers.Date0, GraffitiNumbers.Date1, GraffitiNumbers.Date2,
+  GraffitiNumbers.Date3, GraffitiNumbers.Date4, GraffitiNumbers.Date5,
+  GraffitiNumbers.Date6, GraffitiNumbers.Date7, GraffitiNumbers.Date8,
+  GraffitiNumbers.Date9,
+];
 
 import Years from "../resources/assets/images/Signs/Years.gif";
 
 import leftarrow from "../resources/assets/images/Signs/Reflective Left Arrow.gif";
 import rightarrow from "../resources/assets/images/Signs/Reflective Right Arrow.gif";
-
-const NUMBERS = [n0, n1, n2, n3, n4, n5, n6, n7, n8, n9];
 
 function YearDigits({ year, className }) {
   return (
@@ -25,7 +21,7 @@ function YearDigits({ year, className }) {
       {String(year).split("").map((digit, i) => (
         <img
           key={i}
-          src={NUMBERS[parseInt(digit)]}
+          src={YEAR_DIGITS[parseInt(digit)]}
           alt={digit}
           className={"view-years-number-gif"}
         />
@@ -56,13 +52,22 @@ export default function ViewYears({ currentDate, onToggleYearView, onSelectYear 
     return (
       <div className="year-view-container">
         <div className="view-years-top-nav">
-          <img src={leftarrow} alt="Previous" className="view-years-nav-arrow" onClick={onPrev} />
+          <img src={leftarrow}
+          title = "Past Years"
+          alt="Previous" className="view-years-nav-arrow" onClick={onPrev} />
 
           <div className="main-month" onClick={onToggleYearView} style={{ cursor: "pointer" }}>
-            <img src={Years} alt="Years" className="years-header-gif" />
+            <img src={Years}
+            title = "Toggle Months"
+            alt="Years" 
+            className="years-header-gif" />
           </div>
 
-          <img src={rightarrow} alt="Next" className="view-years-nav-arrow" onClick={onNext} />
+          <img src={rightarrow}
+          title = "Future Years"
+          alt="Next"
+          className="view-years-nav-arrow"
+          onClick={onNext} />
         </div>
 
         <div className="years-grid">

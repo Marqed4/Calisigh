@@ -172,6 +172,7 @@ body {
   cursor: pointer;
   transition: background 0.15s;
   height: 37.5px;
+  width: 130px;
   overflow: hidden;
 }
 
@@ -188,24 +189,17 @@ body {
 .settings-upload-backgrounds-gif,
 .settings-save-gif,
 .settings-cancel-gif {
-  height: 40px;
+  height: 60px;
   width: auto;
   cursor: pointer;
-  background: transparent;
-  border-radius: 0;
-  padding: 0;
   display: block;
 }
 
 .settings-upload-songs-gif {
-  height: 40px;
-  overflow: hidden;
+  height: 60px;
   width: auto;
   cursor: pointer;
-  background: rgba(0, 0, 0, 0.55);
-  border-radius: 20px;
-  margin-top: 5.5px;
-  transition: transform 0.08s ease, background 0.15s;
+  display: block;
 }
 
 .settings-upload-songs-gif:active {
@@ -380,8 +374,10 @@ body {
   height: 52.5px;
   z-index: 4;
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 6px;
   border-top: 3px solid rgba(255,255,255,0.15);
   background: rgba(255,255,255,0.12);
   backdrop-filter: blur(6px);

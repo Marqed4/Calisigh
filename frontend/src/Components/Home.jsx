@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { listen } from "@tauri-apps/api/event";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
-import Settings from "../resources/assets/images/Signs/Settings.gif?url";
+import Settings from "../resources/assets/images/Signs/Settings.gif";
 import { DefaultBackgrounds } from "../resources/assets/images/Backgrounds/index.js";
 import MonthYearDisplay from "./MonthYearDisplay.jsx";
 import ViewYears from "./ViewYears.jsx";
@@ -309,7 +309,9 @@ export default function Home() {
           onClick={(e) => { e.preventDefault(); openSettingsWindow(); }}
           style={{ cursor: "pointer" }}
         >
-          <img src={Settings} className="settings-header" alt="Settings" />
+          <img src={Settings} 
+          className="settings-header" 
+          alt="Settings" />
         </a>
       </div>
     </div>

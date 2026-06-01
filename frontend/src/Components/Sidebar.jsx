@@ -3,74 +3,47 @@ import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
 
 import "./Sidebar.css";
 
-import jan from "../resources/assets/images/Months/January.gif?url";
-import feb from "../resources/assets/images/Months/February.gif?url";
-import mar from "../resources/assets/images/Months/March.gif?url";
-import apr from "../resources/assets/images/Months/April.gif?url";
-import may from "../resources/assets/images/Months/May.gif?url";
-import jun from "../resources/assets/images/Months/June.gif?url";
-import jul from "../resources/assets/images/Months/July.gif?url";
-import aug from "../resources/assets/images/Months/August.gif?url";
-import sep from "../resources/assets/images/Months/September.gif?url";
-import oct from "../resources/assets/images/Months/October.gif?url";
-import nov from "../resources/assets/images/Months/November.gif?url";
-import dec from "../resources/assets/images/Months/December.gif?url";
+import { GraffitiMonths } from "../resources/assets/images/Graffiti_Months/index.js";
+import { GraffitiNumbers } from "../resources/assets/images/Graffiti_Numbers/index.js";
+import { GraffitiLetters } from "../resources/assets/images/Graffiti_Letters/index.js";
 
-import n0i from "../resources/assets/images/Numbers/0 Inverted.gif?url";
-import n1i from "../resources/assets/images/Numbers/1 Inverted.gif?url";
-import n2i from "../resources/assets/images/Numbers/2 Inverted.gif?url";
-import n3i from "../resources/assets/images/Numbers/3 Inverted.gif?url";
-import n4i from "../resources/assets/images/Numbers/4 Inverted.gif?url";
-import n5i from "../resources/assets/images/Numbers/5 Inverted.gif?url";
-import n6i from "../resources/assets/images/Numbers/6 Inverted.gif?url";
-import n7i from "../resources/assets/images/Numbers/7 Inverted.gif?url";
-import n8i from "../resources/assets/images/Numbers/8 Inverted.gif?url";
-import n9i from "../resources/assets/images/Numbers/9 Inverted.gif?url";
-import n10i from "../resources/assets/images/Numbers/10 Inverted.gif?url";
-import n11i from "../resources/assets/images/Numbers/11 Inverted.gif?url";
-import n12i from "../resources/assets/images/Numbers/12 Inverted.gif?url";
-import n13i from "../resources/assets/images/Numbers/13 Inverted.gif?url";
-import n14i from "../resources/assets/images/Numbers/14 Inverted.gif?url";
-import n15i from "../resources/assets/images/Numbers/15 Inverted.gif?url";
-import n16i from "../resources/assets/images/Numbers/16 Inverted.gif?url";
-import n17i from "../resources/assets/images/Numbers/17 Inverted.gif?url";
-import n18i from "../resources/assets/images/Numbers/18 Inverted.gif?url";
-import n19i from "../resources/assets/images/Numbers/19 Inverted.gif?url";
-import n20i from "../resources/assets/images/Numbers/20 Inverted.gif?url";
-import n21i from "../resources/assets/images/Numbers/21 Inverted.gif?url";
-import n22i from "../resources/assets/images/Numbers/22 Inverted.gif?url";
-import n23i from "../resources/assets/images/Numbers/23 Inverted.gif?url";
-import n24i from "../resources/assets/images/Numbers/24 Inverted.gif?url";
-import n25i from "../resources/assets/images/Numbers/25 Inverted.gif?url";
-import n26i from "../resources/assets/images/Numbers/26 Inverted.gif?url";
-import n27i from "../resources/assets/images/Numbers/27 Inverted.gif?url";
-import n28i from "../resources/assets/images/Numbers/28 Inverted.gif?url";
-import n29i from "../resources/assets/images/Numbers/29 Inverted.gif?url";
-import n30i from "../resources/assets/images/Numbers/30 Inverted.gif?url";
-import n31i from "../resources/assets/images/Numbers/31 Inverted.gif?url";
+import FAQ from "../resources/assets/images/Signs/FAQ.gif";
+import Chat from "../resources/assets/images/Signs/Chat.gif";
 
-import sLetter from "../resources/assets/images/Letters/S.gif?url";
-import mLetter from "../resources/assets/images/Letters/M.gif?url";
-import tLetter from "../resources/assets/images/Letters/T.gif?url";
-import wLetter from "../resources/assets/images/Letters/W.gif?url";
-import fLetter from "../resources/assets/images/Letters/F.gif?url";
+const MONTHS = [
+  GraffitiMonths.January, GraffitiMonths.February, GraffitiMonths.March,
+  GraffitiMonths.April, GraffitiMonths.May, GraffitiMonths.June,
+  GraffitiMonths.July, GraffitiMonths.August, GraffitiMonths.September,
+  GraffitiMonths.October, GraffitiMonths.November, GraffitiMonths.December,
+];
 
-import FAQ from "../resources/assets/images/Signs/FAQ.gif?url";
-import Chat from "../resources/assets/images/Signs/Chat.gif?url";
-
-const MONTHS = [jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec];
-
-const YEAR_DIGITS = [n0i, n1i, n2i, n3i, n4i, n5i, n6i, n7i, n8i, n9i];
+const YEAR_DIGITS = [
+  GraffitiNumbers.Date0, GraffitiNumbers.Date1, GraffitiNumbers.Date2,
+  GraffitiNumbers.Date3, GraffitiNumbers.Date4, GraffitiNumbers.Date5,
+  GraffitiNumbers.Date6, GraffitiNumbers.Date7, GraffitiNumbers.Date8,
+  GraffitiNumbers.Date9,
+];
 
 const DAY_GIFS = [
   null,
-  n1i, n2i, n3i, n4i, n5i, n6i, n7i, n8i, n9i,
-  n10i, n11i, n12i, n13i, n14i, n15i, n16i, n17i, n18i, n19i,
-  n20i, n21i, n22i, n23i, n24i, n25i, n26i, n27i, n28i, n29i,
-  n30i, n31i
+  GraffitiNumbers.Date1,  GraffitiNumbers.Date2,  GraffitiNumbers.Date3,
+  GraffitiNumbers.Date4,  GraffitiNumbers.Date5,  GraffitiNumbers.Date6,
+  GraffitiNumbers.Date7,  GraffitiNumbers.Date8,  GraffitiNumbers.Date9,
+  GraffitiNumbers.Date10, GraffitiNumbers.Date11, GraffitiNumbers.Date12,
+  GraffitiNumbers.Date13, GraffitiNumbers.Date14, GraffitiNumbers.Date15,
+  GraffitiNumbers.Date16, GraffitiNumbers.Date17, GraffitiNumbers.Date18,
+  GraffitiNumbers.Date19, GraffitiNumbers.Date20, GraffitiNumbers.Date21,
+  GraffitiNumbers.Date22, GraffitiNumbers.Date23, GraffitiNumbers.Date24,
+  GraffitiNumbers.Date25, GraffitiNumbers.Date26, GraffitiNumbers.Date27,
+  GraffitiNumbers.Date28, GraffitiNumbers.Date29, GraffitiNumbers.Date30,
+  GraffitiNumbers.Date31,
 ];
 
-const DAY_LABELS = [sLetter, mLetter, tLetter, wLetter, tLetter, fLetter, sLetter];
+const DAYS_INIT = [
+  GraffitiLetters.S, GraffitiLetters.M, GraffitiLetters.T, 
+  GraffitiLetters.W, GraffitiLetters.T, GraffitiLetters.F, 
+  GraffitiLetters.S
+]
 
 async function openChatWindow() {
   try {
@@ -119,7 +92,7 @@ export default function Sidebar({ currentDate, calendarDays }) {
       </div>
 
       <div className="mini-grid">
-        {DAY_LABELS.map((gif, i) => (
+        {DAYS_INIT.map((gif, i) => (
           <div key={i} className="mini-day-label">
             <img src={gif} alt={["S","M","T","W","T","F","S"][i]} className="mini-day-label-gif" />
           </div>
@@ -148,7 +121,7 @@ export default function Sidebar({ currentDate, calendarDays }) {
         title="About/FAQ"
         onClick={(e) => {
           e.preventDefault();
-          openUrl("https://www.marqed.it/CustomCalendar");
+          openUrl("https://www.marqed.it/Calisigh");
         }}
         style={{ cursor: "pointer" }}
       >
