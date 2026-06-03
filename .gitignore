@@ -27,5 +27,6 @@ jpackage-output
 **/frontend/src-tauri/resources/jre
 **/backend/debug.txt
 **/Automation Scripts
-# **/backend/target
+Don't include target classes made in the backend.
+**/backend/target/*
 rust-init.exe

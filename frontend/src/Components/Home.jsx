@@ -148,8 +148,12 @@ export default function Home() {
         `http://localhost:4567/api/holidays?year=${year}&categories=${categories.join(",")}`
       );
       const data = await res.json();
+      /* Store An array per date */
       const map = {};
-      for (const h of data) map[h.date] = h;
+      for (const h of data) {
+        if (!map[h.date]) map[h.date] = [];
+        map[h.date].push(h);
+      }
       setHolidays(map);
     } catch (err) {
       console.error("Failed to load holidays:", err);

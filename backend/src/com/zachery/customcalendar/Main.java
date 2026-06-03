@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.zachery.customcalendar.ObservationsHolidays.Holiday;
 
 import static spark.Spark.before;
 import static spark.Spark.delete;
@@ -311,7 +312,7 @@ public class Main
 
                 // Optional comma-separated category filter, e.g. ?categories=federal,religious
                 String catParam = req.queryParams("categories");
-                java.util.List<Holidays.Holiday> all = Holidays.forYear(year);
+                java.util.List<Holiday> all = ObservancesHolidaysMaster.forYear(year);
 
                 if (catParam != null && !catParam.isBlank()) {
                     java.util.Set<String> wanted = new java.util.HashSet<>(

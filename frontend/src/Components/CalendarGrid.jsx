@@ -73,7 +73,8 @@ export default function CalendarGrid({ calendarDays, currentDate, alarms, onDayC
             key={i}
             className={`day-cell ${isToday ? "today" : ""} ${holiday ? "day-cell--holiday" : ""}`}
             onClick={() => onDayClick(date)}
-            title={holiday ? holiday.name : undefined}
+            // title on the cell, cat
+            title={holiday ? holiday.map(h => h.name).join(" · ") : undefined}
           >
             {date && (
               <>
@@ -84,7 +85,9 @@ export default function CalendarGrid({ calendarDays, currentDate, alarms, onDayC
                     className="day-number-img"
                   />
                   {holiday && (
-                    <span className="holiday-label">{holiday.shortName}</span>
+                    <span className="holiday-label">
+                      {holiday.map(h => h.shortName).join(" · ")}
+                    </span>
                   )}
                 </div>
                 {alarms
