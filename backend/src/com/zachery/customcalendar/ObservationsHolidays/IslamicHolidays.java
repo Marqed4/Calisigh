@@ -30,7 +30,7 @@ final class IslamicHolidays
         // We compute the Hijri New Year that falls closest to Jan 1 of the given year
         // and then also the next one if it falls within the same Gregorian year.
         final LocalDate ANCHOR_HIJRI_NY = LocalDate.of(2001, 3, 26); // 1 Muharram 1422 AH
-        final double    IY_DAYS         = 354.36707;                  // mean Islamic year
+        final double IY_DAYS = 354.36707; // mean Islamic year
 
         // How many Islamic years since the anchor?
         long daysSinceAnchor = LocalDate.of(year, 1, 1).toEpochDay()
@@ -52,7 +52,7 @@ final class IslamicHolidays
 
     private static void addSet(List<Holiday> list, LocalDate newYear, int targetYear)
     {
-        addIfInYear(list, newYear,              "Islamic New Year",    "Islamic NY",  targetYear);
+        addIfInYear(list, newYear, "Islamic New Year", "Islamic NY",  targetYear);
         addIfInYear(list, newYear.plusDays(11), "Mawlid al-Nabi",      "Mawlid",      targetYear);
         addIfInYear(list, newYear.plusDays(148),"Ramadan Begins",      "Ramadan",     targetYear);
         addIfInYear(list, newYear.plusDays(178),"Eid al-Fitr",         "Eid al-Fitr", targetYear);

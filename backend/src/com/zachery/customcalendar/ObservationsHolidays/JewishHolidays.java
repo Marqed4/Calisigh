@@ -29,7 +29,7 @@ final class JewishHolidays
         LocalDate roshHashanah = computeRoshHashanah(year);
 
         // Rosh Hashanah - 2 days
-        list.add(new Holiday(roshHashanah,             "Rosh Hashanah",         "Rosh Hash.", RELIGIOUS));
+        list.add(new Holiday(roshHashanah, "Rosh Hashanah", "Rosh Hash.", RELIGIOUS));
         list.add(new Holiday(roshHashanah.plusDays(1), "Rosh Hashanah (day 2)", "Rosh Hash.", RELIGIOUS));
 
         // Yom Kippur - 10 Tishri
@@ -50,9 +50,9 @@ final class JewishHolidays
         // Passover (Pesach) - 15 Nisan
         // Shavuot - 6 Sivan, exactly 50 days after the first day of Passover
         LocalDate passover = computePassover(year);
-        list.add(new Holiday(passover.minusDays(30), "Purim",             "Purim",    RELIGIOUS));
-        list.add(new Holiday(passover,               "Passover (Pesach)", "Passover", RELIGIOUS));
-        list.add(new Holiday(passover.plusDays(6),   "Passover ends",     "Passover", RELIGIOUS));
-        list.add(new Holiday(passover.plusDays(50),  "Shavuot",           "Shavuot",  RELIGIOUS));
+        list.add(new Holiday(passover.minusDays(30), "Purim", "Purim", RELIGIOUS));
+        list.add(new Holiday(passover, "Passover (Pesach)", "Passover", RELIGIOUS));
+        list.add(new Holiday(passover.plusDays(6), "Passover ends", "Passover", RELIGIOUS));
+        list.add(new Holiday(passover.plusDays(50), "Shavuot", "Shavuot", RELIGIOUS));
     }
 }
