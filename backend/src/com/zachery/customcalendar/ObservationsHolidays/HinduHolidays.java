@@ -11,11 +11,11 @@ import static com.zachery.customcalendar.ObservationsHolidays.HolidayCategory.RE
  *
  * These use astronomical approximations anchored to known dates.
  *
- *  Diwali   – 15th day of Kartik (new moon of Kartik); falls Oct 13 - Nov 15
+ *  Diwali   - 15th day of Kartik (new moon of Kartik); falls Oct 13 - Nov 15
  *             Anchor: Diwali 2000 = Oct 26, 2000
- *  Holi     – last full moon of Phalguna; falls Feb 20 - Mar 22
+ *  Holi     - last full moon of Phalguna; falls Feb 20 - Mar 22
  *             Anchor: Holi 2000 = Mar 20, 2000  (Holika Dahan eve)
- *  Dussehra – 10th day (Vijaya Dashami) of Navratri; falls Sep 22 - Oct 24
+ *  Dussehra - 10th day (Vijaya Dashami) of Navratri; falls Sep 22 - Oct 24
  *             Anchor: Dussehra 2000 = Oct 7, 2000
  *
  * The Hindu lunisolar year averages ~365.2587 days.

@@ -17,8 +17,8 @@ import static com.zachery.customcalendar.ObservationsHolidays.HolidayCategory.RE
  *   15 Tishri  = Sukkot begins  (7 days)
  *   22 Tishri  = Shemini Atzeret / Simchat Torah
  * Nisan 15     = Passover (Pesach) first night
- * Sivan 6      = Shavuot  – 50 days after the first day of Passover
- * Adar 14      = Purim    – falls ~30 days before Pesach
+ * Sivan 6      = Shavuot  - 50 days after the first day of Passover
+ * Adar 14      = Purim    - falls ~30 days before Pesach
  */
 final class JewishHolidays
 {

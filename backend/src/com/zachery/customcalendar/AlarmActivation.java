@@ -173,7 +173,7 @@ public class AlarmActivation
 
             if (!soundFile.exists())
             {
-                System.err.println("Sound file not found: " + soundFile.getAbsolutePath());
+                System.err.println("sound file's not there. shocker. " + soundFile.getAbsolutePath());
                 return this;
             }
 
@@ -184,7 +184,7 @@ public class AlarmActivation
             else if (name.endsWith(".mp3"))
                 playMp3(soundFile);
             else
-                System.err.println("Unsupported audio format: " + name);
+                System.err.println("unsupported format. nobody asked me though. " + name);
         }
         catch (Exception e)
         {

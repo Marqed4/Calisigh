@@ -79,7 +79,7 @@ public class SystemDirectory
         {
             if (in == null)
             {
-                System.err.println("Default Chime.mp3 not found in JAR classpath");
+                System.err.println("default chime's missing from the jar. even the sound doesn't want to be here.");
                 return;
             }
 

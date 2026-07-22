@@ -182,7 +182,7 @@ public class AlarmSounds
 
             if (!soundFile.exists())
             {
-                System.err.println("Sound file not found: " + soundFile.getAbsolutePath());
+                System.err.println("can't find the sound file. it's just gone. " + soundFile.getAbsolutePath());
                 return;
             }
 
@@ -200,7 +200,7 @@ public class AlarmSounds
             }
             else
             {
-                System.err.println("Unsupported format: " + name);
+                System.err.println("unsupported format, obviously: " + name);
                 return;
             }
 
@@ -209,7 +209,7 @@ public class AlarmSounds
         }
         catch (Exception e)
         {
-            System.err.println("Failed to play sound: " + e.getMessage());
+            System.err.println("couldn't play the sound. nothing ever works. " + e.getMessage());
         }
     }
 
@@ -282,7 +282,7 @@ public class AlarmSounds
         catch (Exception e)
         {
             if (!Thread.currentThread().isInterrupted())
-                System.err.println("MP3 playback error: " + e.getMessage());
+                System.err.println("mp3 broke mid-song. of course it did. " + e.getMessage());
         }
     }
 
@@ -307,7 +307,7 @@ public class AlarmSounds
         catch (Exception e)
         {
             if (!Thread.currentThread().isInterrupted())
-                System.err.println("WAV playback error: " + e.getMessage());
+                System.err.println("wav broke too. figures. " + e.getMessage());
         }
         finally
         {
@@ -338,7 +338,7 @@ public class AlarmSounds
         }
         catch (Exception e)
         {
-            System.err.println("Volume control not supported: " + e.getMessage());
+            System.err.println("can't even control the volume. whatever. " + e.getMessage());
         }
     }
 
@@ -352,7 +352,7 @@ public class AlarmSounds
         }
         catch (Exception e)
         {
-            System.err.println("Volume control not supported: " + e.getMessage());
+            System.err.println("can't even control the volume. whatever. " + e.getMessage());
         }
     }
 

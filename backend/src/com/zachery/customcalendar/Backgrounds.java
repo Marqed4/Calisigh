@@ -3,11 +3,11 @@ package com.zachery.customcalendar;
 import com.google.gson.*;
 import java.io.*;
 import java.nio.file.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Backgrounds {
-    private static final int B_TREE_DEGREE = 3; // t=3: nodes hold 2–5 keys
-    private BTree tree = new BTree(B_TREE_DEGREE);
+    private final List<String> entries = new ArrayList<>();
 
     public Backgrounds() {
         try {
@@ -31,7 +31,7 @@ public class Backgrounds {
             JsonObject obj = el.getAsJsonObject();
             String name = obj.get("name").getAsString();
             String path = obj.get("path").getAsString();
-            tree.insert(name + "|&" + path);
+            entries.add(name + "|&" + path);
         }
     }
 
@@ -46,18 +46,18 @@ public class Backgrounds {
                 : fileName;
 
         // Skip if already exists
-        if (tree.search(displayName) != null) return;
+        if (findEntry(displayName) != null) return;
 
         File destFile = SystemDirectory.ObtainFile("Backgrounds/Uploads/" + fileName);
         destFile.getParentFile().mkdirs();
         Files.copy(sourceFile.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
-        tree.insert(displayName + "|&" + destFile.getAbsolutePath().replace("\\", "/"));
+        entries.add(displayName + "|&" + destFile.getAbsolutePath().replace("\\", "/"));
         saveBackgrounds();
     }
 
     public void removeBackground(String name) throws IOException {
-        String entry = tree.search(name);
+        String entry = findEntry(name);
         if (entry == null) {
             System.out.println("Background not found: " + name);
             return;
@@ -67,8 +67,15 @@ public class Backgrounds {
         File uploadedFile = new File(filePath);
         if (uploadedFile.exists()) uploadedFile.delete();
 
-        tree.delete(name);
+        entries.remove(entry);
         saveBackgrounds();
+    }
+
+    private String findEntry(String name) {
+        for (String entry : entries) {
+            if (getDisplayName(entry).equals(name)) return entry;
+        }
+        return null;
     }
 
     private void saveBackgrounds() throws IOException {
@@ -76,7 +83,7 @@ public class Backgrounds {
         file.getParentFile().mkdirs();
 
         JsonArray arr = new JsonArray();
-        for (String entry : tree.getAllEntries()) {
+        for (String entry : entries) {
             JsonObject obj = new JsonObject();
             obj.addProperty("name", getDisplayName(entry));
             obj.addProperty("path", getFilePath(entry));
@@ -90,7 +97,7 @@ public class Backgrounds {
     }
 
     public List<String> getAllBackgrounds() {
-        return tree.getAllEntries();
+        return entries;
     }
 
     public static String getDisplayName(String entry) {

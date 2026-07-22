@@ -1,8 +1,11 @@
 package com.zachery.customcalendar;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -22,8 +25,16 @@ public class Main
     public static final AtomicReference<String> firingTitle = new AtomicReference<>("");
     public static final AtomicReference<String> firingDesc  = new AtomicReference<>("");
 
+    //printStackTrace() goes to stderr, and release builds pipe the backend's stderr to null,
+    //so it was writing to nowhere in production. routing through this instead.
+    private static final Logger LOGGER = Logger.getLogger(Main.class.getName());
+
     public static void main(String[] args) throws Exception
     {
+        /*
+        Register for toasts + seed default sounds before Spark even boots,
+        so the first alarm that fires doesn't have to set any of that up on the fly
+        */
         String iconPath = SystemDirectory.Directory("resources/assets/images/icon.ico").getAbsolutePath();
         registerAppForToasts("com.zachery.calisigh", "Calisigh", iconPath);
         SystemDirectory.seedDefaultSounds();
@@ -33,42 +44,50 @@ public class Main
 
         port(4567);
 
+        //LocalDateTime doesn't have a default Gson serializer, roll our own
         Gson gson = new GsonBuilder()
             .registerTypeAdapter(LocalDateTime.class,
                 (com.google.gson.JsonSerializer<LocalDateTime>) (src, type, ctx) ->
                     new com.google.gson.JsonPrimitive(src.toString()))
             .create();
 
+        /*
+        AlarmSounds -> DateAlarm -> Backgrounds
+        each one can throw on construction (missing dirs, bad config, etc), so
+        bail loud and crash instead of limping along with a half-built backend
+        */
         AlarmSounds alarmSounds;
         try {
             alarmSounds = new AlarmSounds();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (@SuppressWarnings("TooBroadCatch") Exception e) {
+            LOGGER.log(Level.SEVERE, "Failed to init AlarmSounds", e);
             throw e;
         }
 
         DateAlarm dateAlarm;
         try {
             dateAlarm = new DateAlarm(alarmSounds);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (@SuppressWarnings("TooBroadCatch") Exception e) {
+            LOGGER.log(Level.SEVERE, "Failed to init DateAlarm", e);
             throw e;
         }
 
         Backgrounds backgrounds;
         try {
             backgrounds = new Backgrounds();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (@SuppressWarnings("TooBroadCatch") Exception e) {
+            LOGGER.log(Level.SEVERE, "Failed to init Backgrounds", e);
             throw e;
         }
 
+        //Let the Tauri webview hit this from its own origin
         before((req, res) -> {
             res.header("Access-Control-Allow-Origin", "*");
             res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
             res.header("Access-Control-Allow-Headers", "Content-Type");
         });
 
+        //Preflight catch-all so the browser stops complaining
         options("/*", (req, res) -> {
             res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
             return "OK";
@@ -92,12 +111,13 @@ public class Main
             return gson.toJson(new MessageResponse("Firing cleared."));
         });
 
+        // Alarm CRUD
         get("/api/alarms", (req, res) -> {
             res.type("application/json");
             try {
                 return gson.toJson(dateAlarm.alarmDataList);
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (@SuppressWarnings("TooBroadCatch") Exception e) {
+                LOGGER.log(Level.SEVERE, "GET /api/alarms failed", e);
                 res.status(500);
                 return "{\"error\": \"" + e.getMessage() + "\"}";
             }
@@ -113,8 +133,8 @@ public class Main
                     body.desc
                 );
                 return gson.toJson(new MessageResponse("Alarm set!"));
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (@SuppressWarnings("TooBroadCatch") Exception e) {
+                LOGGER.log(Level.SEVERE, "POST /api/alarms failed", e);
                 res.status(500);
                 return gson.toJson(new MessageResponse("Failed: " + e.getMessage()));
             }
@@ -126,8 +146,8 @@ public class Main
                 AlarmRequest body = gson.fromJson(req.body(), AlarmRequest.class);
                 dateAlarm.removeAlarm(java.time.LocalDateTime.parse(body.time));
                 return gson.toJson(new MessageResponse("Alarm removed!"));
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (@SuppressWarnings("TooBroadCatch") Exception e) {
+                LOGGER.log(Level.SEVERE, "DELETE /api/alarms failed", e);
                 res.status(500);
                 return gson.toJson(new MessageResponse("Failed: " + e.getMessage()));
             }
@@ -145,19 +165,20 @@ public class Main
                     body.desc
                 );
                 return gson.toJson(new MessageResponse("Alarm updated..."));
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (@SuppressWarnings("TooBroadCatch") Exception e) {
+                LOGGER.log(Level.SEVERE, "PUT /api/alarms/:id failed", e);
                 res.status(500);
                 return gson.toJson(new MessageResponse("Failed: " + e.getMessage()));
             }
         });
 
+        // Background image endpoints
         get("/api/backgrounds", (req, res) -> {
             res.type("application/json");
             try {
                 return gson.toJson(backgrounds.getAllBackgrounds());
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (@SuppressWarnings("TooBroadCatch") Exception e) {
+                LOGGER.log(Level.SEVERE, "GET /api/backgrounds failed", e);
                 res.status(500);
                 return "{\"error\": \"" + e.getMessage() + "\"}";
             }
@@ -169,8 +190,8 @@ public class Main
                 BackgroundRequest body = gson.fromJson(req.body(), BackgroundRequest.class);
                 backgrounds.addBackground(body.sourcePath);
                 return gson.toJson(new MessageResponse("Background added!"));
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (@SuppressWarnings("TooBroadCatch") Exception e) {
+                LOGGER.log(Level.SEVERE, "POST /api/backgrounds failed", e);
                 res.status(500);
                 return gson.toJson(new MessageResponse("Failed: " + e.getMessage()));
             }
@@ -182,19 +203,20 @@ public class Main
                 BackgroundRequest body = gson.fromJson(req.body(), BackgroundRequest.class);
                 backgrounds.removeBackground(body.name);
                 return gson.toJson(new MessageResponse("Background removed!"));
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (@SuppressWarnings("TooBroadCatch") Exception e) {
+                LOGGER.log(Level.SEVERE, "DELETE /api/backgrounds failed", e);
                 res.status(500);
                 return gson.toJson(new MessageResponse("Failed: " + e.getMessage()));
             }
         });
 
+        // Alarm sound endpoints
         get("/api/sounds", (req, res) -> {
             res.type("application/json");
             try {
                 return gson.toJson(alarmSounds.getAllSounds());
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (@SuppressWarnings("TooBroadCatch") Exception e) {
+                LOGGER.log(Level.SEVERE, "GET /api/sounds failed", e);
                 res.status(500);
                 return "{\"error\": \"" + e.getMessage() + "\"}";
             }
@@ -204,8 +226,8 @@ public class Main
             res.type("application/json");
             try {
                 return gson.toJson(alarmSounds.getSelectedSound());
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (@SuppressWarnings("TooBroadCatch") Exception e) {
+                LOGGER.log(Level.SEVERE, "GET /api/sounds/selected failed", e);
                 res.status(500);
                 return "null";
             }
@@ -215,8 +237,8 @@ public class Main
             res.type("application/json");
             try {
                 return gson.toJson(new VolumeResponse(alarmSounds.getVolume()));
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (@SuppressWarnings("TooBroadCatch") Exception e) {
+                LOGGER.log(Level.SEVERE, "GET /api/sounds/volume failed", e);
                 res.status(500);
                 return "{\"error\": \"" + e.getMessage() + "\"}";
             }
@@ -228,8 +250,8 @@ public class Main
                 VolumeRequest body = gson.fromJson(req.body(), VolumeRequest.class);
                 alarmSounds.setVolume(body.volume);
                 return gson.toJson(new MessageResponse("Volume set."));
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (@SuppressWarnings("TooBroadCatch") Exception e) {
+                LOGGER.log(Level.SEVERE, "POST /api/sounds/volume failed", e);
                 res.status(500);
                 return gson.toJson(new MessageResponse("Failed: " + e.getMessage()));
             }
@@ -241,8 +263,8 @@ public class Main
                 SoundRequest body = gson.fromJson(req.body(), SoundRequest.class);
                 alarmSounds.playSound(body.name);
                 return gson.toJson(new MessageResponse("Playing: " + body.name));
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (@SuppressWarnings("TooBroadCatch") Exception e) {
+                LOGGER.log(Level.SEVERE, "POST /api/sounds/play failed", e);
                 res.status(500);
                 return gson.toJson(new MessageResponse("Failed: " + e.getMessage()));
             }
@@ -256,8 +278,8 @@ public class Main
                 firingTitle.set("");
                 firingDesc.set("");
                 return gson.toJson(new MessageResponse("Sound stopped."));
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (@SuppressWarnings("TooBroadCatch") Exception e) {
+                LOGGER.log(Level.SEVERE, "POST /api/sounds/stop failed", e);
                 res.status(500);
                 return gson.toJson(new MessageResponse("Failed: " + e.getMessage()));
             }
@@ -269,8 +291,8 @@ public class Main
                 SoundRequest body = gson.fromJson(req.body(), SoundRequest.class);
                 alarmSounds.selectSound(body.name);
                 return gson.toJson(new MessageResponse("Sound selected: " + body.name));
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (@SuppressWarnings("TooBroadCatch") Exception e) {
+                LOGGER.log(Level.SEVERE, "POST /api/sounds/select failed", e);
                 res.status(500);
                 return gson.toJson(new MessageResponse("Failed: " + e.getMessage()));
             }
@@ -282,8 +304,8 @@ public class Main
                 SoundRequest body = gson.fromJson(req.body(), SoundRequest.class);
                 alarmSounds.addSound(body.sourcePath);
                 return gson.toJson(new MessageResponse("Sound added!"));
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (@SuppressWarnings("TooBroadCatch") Exception e) {
+                LOGGER.log(Level.SEVERE, "POST /api/sounds failed", e);
                 res.status(500);
                 return gson.toJson(new MessageResponse("Failed: " + e.getMessage()));
             }
@@ -295,13 +317,14 @@ public class Main
                 SoundRequest body = gson.fromJson(req.body(), SoundRequest.class);
                 alarmSounds.removeSound(body.name);
                 return gson.toJson(new MessageResponse("Sound removed!"));
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (@SuppressWarnings("TooBroadCatch") Exception e) {
+                LOGGER.log(Level.SEVERE, "DELETE /api/sounds failed", e);
                 res.status(500);
                 return gson.toJson(new MessageResponse("Failed: " + e.getMessage()));
             }
         });
 
+        // Holidays/observances, filterable by year + category
         get("/api/holidays", (req, res) -> {
             res.type("application/json");
             try {
@@ -324,14 +347,17 @@ public class Main
                 }
 
                 return gson.toJson(all);
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (@SuppressWarnings("TooBroadCatch") Exception e) {
+                LOGGER.log(Level.SEVERE, "GET /api/holidays failed", e);
                 res.status(500);
-                return "{\"error\": \"" + e.getMessage() + "\"}";
+                return "{\"error\": \"" + e.getMessage() + "\"}"; 
             }
         });
 
+        //Kick off the alarm-firing watch loop
         dateAlarm.checkAlarm();
+
+        //Wire up the AI chat routes
         new Chat().register();
 
         System.out.println("Java backend running on http://localhost:4567");
@@ -383,6 +409,11 @@ public class Main
         }
     }
 
+    /*
+    Windows won't show a toast with our name/icon unless the app has an
+    AppUserModelID registered under HKCU first, so write it ourselves here
+    instead of making the installer do it
+    */
     private static void registerAppForToasts(String aumid, String displayName, String iconPath)
     {
         try
@@ -401,9 +432,10 @@ public class Main
 
             System.out.println("App registered for toasts: " + aumid);
         }
-        catch (Exception e)
+        //exec().waitFor() only throws these two, no need for a broad Exception catch
+        catch (IOException | InterruptedException e)
         {
-            System.err.println("Failed to register app: " + e.getMessage());
+            System.err.println("couldn't register the app. windows just doesn't get me. " + e.getMessage());
         }
     }
 }

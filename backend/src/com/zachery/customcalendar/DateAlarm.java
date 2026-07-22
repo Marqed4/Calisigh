@@ -151,7 +151,7 @@ public class DateAlarm
                 }
                 catch (Exception e)
                 {
-                    System.err.println("Error firing alarm: " + e.getMessage());
+                    System.err.println("alarm didn't fire. great, just great. " + e.getMessage());
                     e.printStackTrace();
                 }
             }
