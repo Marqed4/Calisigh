@@ -5,11 +5,14 @@ use crate::java_runtime;
 use crate::logging::log_line;
 use crate::ollama;
 
-// TODO: Also check clear  toast notifications on auto start.
+/*
+UNDERSTAND: Everything here talks to external processes (ollama, java, msiexec) and
+can block for a while, especially right after a cold boot.
 
-// Everything here talks to external processes (ollama, java, msiexec) and can block for a
-// while, especially right after a cold boot. runs on its own thread see main.rs's setup()
-// for why it can't run inline there.
+PLAN: Runs on its own thread. See main.rs's setup() for why it can't run inline there.
+
+TODO: Also check clear toast notifications on auto start.
+*/
 pub fn run(app_handle: tauri::AppHandle, is_autostart: bool) {
     log_line(&format!("--- setup thread starting, autostart={} ---", is_autostart));
 
@@ -25,10 +28,16 @@ pub fn run(app_handle: tauri::AppHandle, is_autostart: bool) {
         return;
     }
 
-    let jar_path = match backend::find_jar(&exe_dir) {
+    let mut found_jar = None;
+    retry_if_autostart(is_autostart, || {
+        found_jar = backend::find_jar(&exe_dir);
+        found_jar.is_some()
+    });
+
+    let jar_path = match found_jar {
         Some(p) => p,
         None => {
-            log_line("can't find CustomCalendar.jar anywhere. giving up. not like it matters.");
+            log_line("Can't find CustomCalendar.jar anywhere. Giving up. Not like it matters.");
             return;
         }
     };
@@ -45,16 +54,40 @@ pub fn run(app_handle: tauri::AppHandle, is_autostart: bool) {
     backend::spawn(&jar_path);
 }
 
+/*
+UNDERSTAND: Right after boot, PATH may not be fully populated yet for processes launched
+via the autostart Run key, and AV can still be holding a lock on freshly-installed exes.
+These checks are cheap and the failure mode (falsely reporting "not installed") is
+annoying enough to be worth a few retries before we believe it.
+
+EDGE CASES: Only retry on autostart. A manual launch happens well after boot has
+settled and shouldn't need this.
+*/
+fn retry_if_autostart(is_autostart: bool, mut check: impl FnMut() -> bool) -> bool {
+    if !is_autostart {
+        return check();
+    }
+    for attempt in 0..4 {
+        if check() {
+            return true;
+        }
+        if attempt < 3 {
+            std::thread::sleep(std::time::Duration::from_secs(3));
+        }
+    }
+    false
+}
+
 fn check_ollama(app_handle: &tauri::AppHandle, is_autostart: bool) {
-    if !ollama::is_ollama_installed() {
-        log_line("ollama not found on PATH");
+    if !retry_if_autostart(is_autostart, ollama::is_ollama_installed) {
+        log_line("Ollama not found on PATH");
         if is_autostart {
-            log_line("autostart run, skipping blocking dialog for missing ollama");
+            log_line("Autostart run, Skipping blocking dialog for missing ollama");
         } else {
             app_handle
                 .dialog()
-                .message("whatever. Calisigh needs Ollama for the chat thing and it's just not here. typical.\n\nget it from https://ollama.com/download, then run:\n\n  ollama pull llama3.2\n\nnobody ever explains anything to me either.")
-                .title("ollama's missing. so is everything else.")
+                .message("Whatever, like, Calisigh needs Ollama for the chat thing and it's just not here; typical: \n\n get it from https://ollama.com/download, then run: \n\n  ollama pull llama3.2\n\nnobody ever explains anything to me either.")
+                .title("Ollama's missing, come on dude.")
                 .blocking_show();
         }
     } else if !ollama::is_model_available() {
@@ -66,7 +99,7 @@ fn check_ollama(app_handle: &tauri::AppHandle, is_autostart: bool) {
 }
 
 fn ensure_java(app_handle: &tauri::AppHandle, exe_dir: &std::path::Path, is_autostart: bool) -> bool {
-    if java_runtime::is_java_installed() {
+    if retry_if_autostart(is_autostart, java_runtime::is_java_installed) {
         return true;
     }
 
@@ -74,41 +107,39 @@ fn ensure_java(app_handle: &tauri::AppHandle, exe_dir: &std::path::Path, is_auto
     if !is_autostart {
         app_handle
             .dialog()
-            .message("no Java installed. fine. I'll do it myself, like always.\n\ninstalling the bundled Java 21 runtime now. this'll take a minute. don't wait up.")
-            .title("installing java. don't ask.")
+            .message("No Java installed, I guess you don't even want to use the app.
+            \n\n I'll try doing it myself, like always. ughhh. \n\n Installing the bundled Java Runtime Environment now. \n\n
+            This'll take a minute, don't wait up.")
+            .title("Installing java. I'll excuse it cuz its your first time.")
             .blocking_show();
     }
 
     match java_runtime::install_jre(exe_dir) {
         Ok(_) => {
-            log_line("JRE installed successfully");
+            log_line("Hey, listen! JRE installed successfully");
             if !is_autostart {
                 app_handle
                     .dialog()
-                    .message("Java 21 installed. it worked. weird.")
-                    .title("java's in. whatever.")
+                    .message("So now that we installed Java 21 things should be working \n\n Yea, emo but not incompetent...")
+                    .title("Java's in now, maybe, like, say thank you? Whatever.")
                     .blocking_show();
             }
             true
         }
         Err(e) => {
-            log_line(&format!("jre install failed. of course it did. {}", e));
+            log_line(&format!("JRE install failed... of course it did, yup. {}", e));
             if is_autostart {
-                /*
-                Don't exit(1) silently on autostart that kills the whole app
-                with no explanation visible to the user. Just bail on backend
-                setup and let them find out (and fix it) from a normal launch.
-                */
-                log_line("autostart run: skipping failure dialog, leaving backend down");
+                log_line("Autostart run: skipping failure dialog, leaving backend down");
                 false
             } else {
                 app_handle
                     .dialog()
                     .message(&format!(
-                        "of course it failed:\n\n{}\n\nguess you'll have to install Java 21 yourself from https://adoptium.net. figures.",
+                        "Hah, of course it failed, I'm a failure: \n\n {} \n\n guess you'll have to install Java 21 yourself,
+                        maybe use the one from https://adoptium.net? \n\n Totally figures.",
                         e
                     ))
-                    .title("java install failed. nothing works.")
+                    .title("Java install failed. Nothing works. Everything is pointless. ")
                     .blocking_show();
                 std::process::exit(1);
             }

@@ -9,8 +9,9 @@ use tauri_plugin_dialog::DialogExt;
 use crate::backend;
 
 /*
-Attempt to show the main window, retrying up to 10 times with 200ms gaps
-in case the webview hasn't finished registering yet (common on cold boot).
+UNDERSTAND: Right after cold boot the webview may not have finished registering yet.
+
+PLAN: Attempt to show the main window, retrying up to 10 times with 200ms gaps.
 */
 pub fn show_main_window(app: &tauri::AppHandle) {
     let app = app.clone();
@@ -46,9 +47,13 @@ pub fn build(app: &tauri::App) -> tauri::Result<()> {
 
     let _tray = TrayIconBuilder::new()
         .icon({
-            // was using env!("CARGO_MANIFEST_DIR") here which just hardcodes my dev
-            // folder path into the binary lol. embedding it instead so it actually
-            // works once installed somewhere else.
+            /*
+            UNDERSTAND: was using env!("CARGO_MANIFEST_DIR") here which just hardcodes
+            my dev folder path into the binary lol.
+
+            PLAN: embed the icon bytes instead so it actually works once installed
+            somewhere else.
+            */
             let img = image::load_from_memory(include_bytes!("../icons/128x128@2x.png"))
                 .expect("bundled tray icon is corrupt")
                 .into_rgba8();

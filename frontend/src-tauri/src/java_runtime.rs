@@ -1,12 +1,21 @@
 use std::os::windows::process::CommandExt;
-use std::process::Command;
+use std::process::{Command, Stdio};
 
 use crate::logging::log_line;
 use crate::CREATE_NO_WINDOW;
 
+/*
+UNDERSTAND: Without nulling stdin, spawning a child from an autostart-launched process
+can hang forever waiting on a stdin handle that doesn't exist yet at that point in the
+logon sequence. See the comment at the top of ollama.rs for why.
+
+PLAN: stdin explicitly nulled on every Command below.
+*/
+
 pub fn is_java_installed() -> bool {
     Command::new("java")
         .arg("-version")
+        .stdin(Stdio::null())
         .creation_flags(CREATE_NO_WINDOW)
         .output()
         .is_ok()
@@ -30,6 +39,7 @@ pub fn install_jre(exe_dir: &std::path::Path) -> Result<(), String> {
             "/quiet",
             "/norestart",
         ])
+        .stdin(Stdio::null())
         .creation_flags(CREATE_NO_WINDOW)
         .status()
         .map_err(|e| format!("Failed to launch msiexec: {}", e))?;
