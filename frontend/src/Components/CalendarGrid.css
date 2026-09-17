@@ -169,7 +169,7 @@
   border-radius: 6px;
   padding: 8px 10px;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
-  pointer-events: none;
+  pointer-events: auto;
 }
 
 .alarm-tooltip-entry + .alarm-tooltip-entry {

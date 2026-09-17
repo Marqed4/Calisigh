@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useFontTheme } from "./FontPackage.jsx";
 import Remove from "../resources/assets/images/Signs/Red Remove.gif";
 import "./CalendarGrid.css";
@@ -20,6 +20,17 @@ export default function CalendarGrid({ calendarDays, currentDate, alarms, onDayC
   const GraffitiDays    = fontTheme.Days;
 
   const [hoveredDay, setHoveredDay] = useState(null);
+  // small delay so crossing into the popout to scroll it doesn't hide it, cat
+  const hideTimeout = useRef(null);
+
+  function cancelHide() {
+    if (hideTimeout.current) clearTimeout(hideTimeout.current);
+  }
+
+  function scheduleHide() {
+    cancelHide();
+    hideTimeout.current = setTimeout(() => setHoveredDay(null), 150);
+  }
 
   const DAY_NUMBERS = [
     null,
@@ -97,10 +108,11 @@ export default function CalendarGrid({ calendarDays, currentDate, alarms, onDayC
             // hover the cell, see all its events, cat
             onMouseEnter={(e) => {
               if (!dayAlarms.length) return;
+              cancelHide();
               const rect = e.currentTarget.getBoundingClientRect();
               setHoveredDay({ alarms: dayAlarms, x: rect.right, y: rect.top });
             }}
-            onMouseLeave={() => setHoveredDay(null)}
+            onMouseLeave={scheduleHide}
           >
             {date && (
               <>
@@ -143,6 +155,9 @@ export default function CalendarGrid({ calendarDays, currentDate, alarms, onDayC
         <div
           className="alarm-tooltip"
           style={{ left: hoveredDay.x, top: hoveredDay.y }}
+          // stay open and scrollable while the mouse is on it, cat
+          onMouseEnter={cancelHide}
+          onMouseLeave={scheduleHide}
         >
           {hoveredDay.alarms.map((alarm, idx) => (
             <div key={idx} className="alarm-tooltip-entry">
