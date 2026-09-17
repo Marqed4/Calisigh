@@ -1,12 +1,25 @@
+import { useState } from "react";
 import { useFontTheme } from "./FontPackage.jsx";
 import Remove from "../resources/assets/images/Signs/Red Remove.gif";
 import "./CalendarGrid.css";
+
+// shrink title so it fits the cell, cat
+function abbreviateTitle(title) {
+  if (!title) return "";
+  const words = title.trim().split(/\s+/);
+  if (words.length > 1) {
+    return words.map(w => w[0]?.toUpperCase() ?? "").join("").slice(0, 4);
+  }
+  return title.length > 4 ? `${title.slice(0, 4)}.` : title;
+}
 
 export default function CalendarGrid({ calendarDays, currentDate, alarms, onDayClick, onDeleteAlarm, onEditAlarm, gridSize, holidays = {} }) {
 
   const { fontTheme }   = useFontTheme();
   const GraffitiNumbers = fontTheme.Numbers;
   const GraffitiDays    = fontTheme.Days;
+
+  const [hoveredDay, setHoveredDay] = useState(null);
 
   const DAY_NUMBERS = [
     null,
@@ -68,6 +81,12 @@ export default function CalendarGrid({ calendarDays, currentDate, alarms, onDayC
       {calendarDays.map((date, i) => {
         const isToday = date && date.toDateString() === new Date().toDateString();
         const holiday = getHoliday(date);
+        // earliest to latest, cat
+        const dayAlarms = date
+          ? alarms
+              .filter(a => a.time?.startsWith(date.toISOString().split("T")[0]))
+              .sort((a, b) => new Date(a.time) - new Date(b.time))
+          : [];
         return (
           <div
             key={i}
@@ -75,6 +94,13 @@ export default function CalendarGrid({ calendarDays, currentDate, alarms, onDayC
             onClick={() => onDayClick(date)}
             // title on the cell, cat
             title={holiday ? holiday.map(h => h.name).join(" · ") : undefined}
+            // hover the cell, see all its events, cat
+            onMouseEnter={(e) => {
+              if (!dayAlarms.length) return;
+              const rect = e.currentTarget.getBoundingClientRect();
+              setHoveredDay({ alarms: dayAlarms, x: rect.right, y: rect.top });
+            }}
+            onMouseLeave={() => setHoveredDay(null)}
           >
             {date && (
               <>
@@ -90,32 +116,42 @@ export default function CalendarGrid({ calendarDays, currentDate, alarms, onDayC
                     </span>
                   )}
                 </div>
-                {alarms
-                  .filter(a => a.time?.startsWith(date.toISOString().split("T")[0]))
-                  .map((alarm, idx) => (
-                    <div
-                      key={idx}
-                      className="alarm"
-                      onClick={(e) => { e.stopPropagation(); onEditAlarm?.(alarm); }}
-                    >
-                      <span className="alarm-title">{alarm.title}</span>
-                      <span className="alarm-time">
-                        {new Date(alarm.time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                      </span>
-                      <img
-                        src={Remove}
-                        alt="Remove"
-                        className="alarm-delete"
-                        onClick={(e) => { e.stopPropagation(); onDeleteAlarm(alarm); }}
-                      />
-                    </div>
-                  ))
-                }
+                {dayAlarms.map((alarm, idx) => (
+                  <div
+                    key={idx}
+                    className="alarm"
+                    onClick={(e) => { e.stopPropagation(); onEditAlarm?.(alarm); }}
+                  >
+                    <span className="alarm-title">{abbreviateTitle(alarm.title)}</span>
+                    <span className="alarm-time">
+                      {new Date(alarm.time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                    </span>
+                    <img
+                      src={Remove}
+                      alt="Remove"
+                      className="alarm-delete"
+                      onClick={(e) => { e.stopPropagation(); onDeleteAlarm(alarm); }}
+                    />
+                  </div>
+                ))}
               </>
             )}
           </div>
         );
       })}
+      {hoveredDay && (
+        <div
+          className="alarm-tooltip"
+          style={{ left: hoveredDay.x, top: hoveredDay.y }}
+        >
+          {hoveredDay.alarms.map((alarm, idx) => (
+            <div key={idx} className="alarm-tooltip-entry">
+              <h3>{alarm.title}</h3>
+              <p>{alarm.desc || "No description"}</p>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

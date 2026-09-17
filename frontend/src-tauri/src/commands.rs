@@ -31,7 +31,7 @@ fn open_window(
     resizable: bool,
 ) {
     if let Some(w) = app.get_webview_window(label) {
-        let _: tauri::Result<()> = w.set_focus();
+        let _: tauri::Result<()> = w.set_focus(); 
         return;
     }
 

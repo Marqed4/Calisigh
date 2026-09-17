@@ -156,3 +156,38 @@
 .day-cell--holiday.today {
   background: rgba(0, 0, 0, 0.70);
 }
+
+.alarm-tooltip {
+  position: fixed;
+  z-index: 50;
+  max-width: 240px;
+  max-height: 280px;
+  overflow-y: auto;
+  background: rgba(20, 20, 20, 0.92);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  padding: 8px 10px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+}
+
+.alarm-tooltip-entry + .alarm-tooltip-entry {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.alarm-tooltip h3 {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+
+.alarm-tooltip p {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.75);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
